@@ -1,0 +1,64 @@
+{
+  "name": "@upstash/search",
+  "version": "0.0.1",
+  "author": "Cahid Arda Oz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upstash/search-js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/nodejs.mjs",
+      "require": "./dist/nodejs.js"
+    },
+    "./cloudflare": {
+      "import": "./dist/cloudflare.mjs",
+      "require": "./dist/cloudflare.js"
+    },
+    "./nodejs": {
+      "import": "./dist/nodejs.mjs",
+      "require": "./dist/nodejs.js"
+    }
+  },
+  "main": "./dist/nodejs.js",
+  "module": "./dist/nodejs.mjs",
+  "types": "./dist/nodejs.d.ts",
+  "devDependencies": {
+    "@commitlint/cli": "^18.6.0",
+    "@commitlint/config-conventional": "^18.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "bun-types": "latest",
+    "eslint": "9.10.0",
+    "eslint-plugin-unicorn": "^55.0.0",
+    "husky": "^8.0.3",
+    "prettier": "^3.3.3",
+    "tsup": "latest",
+    "typescript": "^5.0.0",
+    "vitest": "^1.2.2"
+  },
+  "bugs": {
+    "url": "https://github.com/upstash/search/issues"
+  },
+  "description": "An HTTP/REST based AI Search client built on top of Upstash REST API.",
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://upstash.com/search",
+  "keywords": [
+    "search",
+    "vector",
+    "upstash",
+    "db"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "bun test src --coverage --bail --coverageSkipTestFiles=[test-utils.ts] --timeout 20000",
+    "fmt": "prettier --write .",
+    "lint": "tsc && eslint \"src/**/*.{js,ts,tsx}\" --quiet --fix",
+    "build": "tsup ",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@upstash/vector": "^1.2.1"
+  }
+}
