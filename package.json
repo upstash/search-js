@@ -34,7 +34,7 @@
     "prettier": "^3.3.3",
     "tsup": "latest",
     "typescript": "^5.0.0",
-    "vitest": "^1.2.2"
+    "vitest": "^3.0.9"
   },
   "bugs": {
     "url": "https://github.com/upstash/search/issues"
