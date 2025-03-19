@@ -4,21 +4,35 @@ type CommandParameters<TNonFieldsParams, TIndexMetadata> = keyof TIndexMetadata 
   ? TNonFieldsParams & { fields?: never }
   : TNonFieldsParams & { fields: TIndexMetadata };
 
+type UpsertParameters<TIndexMetadata extends Record<string, unknown>> = CommandParameters<
+  { id: string; data: string },
+  TIndexMetadata
+>;
+
 export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record<string, unknown>> {
   private vectorIndex: VectorIndex;
   private namespace: string;
   constructor(vectorIndex: VectorIndex, namespace: string) {
     this.vectorIndex = vectorIndex;
+
+    if (!namespace) {
+      throw new Error("Namespace is required when defining a SearchIndex");
+    }
+
     this.namespace = namespace;
   }
 
-  upsert = async (params: CommandParameters<{ id: string; data: string }, TIndexMetadata>) => {
-    const { id, data, fields } = params;
+  upsert = async (
+    params: UpsertParameters<TIndexMetadata> | UpsertParameters<TIndexMetadata>[]
+  ) => {
+    const arrayParams = Array.isArray(params) ? params : [params];
+    const upsertParams = arrayParams.map(({ id, data, fields }) => ({
+      data,
+      id,
+      metadata: fields,
+    }));
 
-    return await this.vectorIndex.upsert(
-      { data, id, metadata: fields },
-      { namespace: this.namespace }
-    );
+    return await this.vectorIndex.upsert(upsertParams, { namespace: this.namespace });
   };
 
   search = async (params: { query: string; limit?: number; filter?: string }) => {
