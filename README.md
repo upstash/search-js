@@ -32,7 +32,7 @@ Create a new collection on [Upstash](https://console.upstash.com/search)
 ## Basic Usage:
 
 ```ts
-import { Search } from "search-sdk";
+import { Search } from "@upstash/search";
 
 type Metadata = {
   title: string;
