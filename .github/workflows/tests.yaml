@@ -4,8 +4,6 @@ on:
     branches:
       - master
   pull_request:
-  schedule:
-    - cron: "0 0 * * *" # daily
 
 env:
   UPSTASH_SEARCH_REST_URL: ${{ secrets.UPSTASH_VECTOR_REST_URL }}
