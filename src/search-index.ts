@@ -1,4 +1,4 @@
-import type { Index as VectorIndex } from "@upstash/vector";
+import type { QueryResult, Index as VectorIndex } from "@upstash/vector";
 
 type CommandParameters<TNonFieldsParams, TIndexMetadata> = keyof TIndexMetadata extends never
   ? TNonFieldsParams & { fields?: never }
@@ -11,7 +11,7 @@ type UpsertParameters<TIndexMetadata extends Record<string, unknown>> = CommandP
 
 /**
  * Represents a search index for managing and querying documents.
- * 
+ *
  * Each SearchIndex instance operates within a specific index, allowing for
  * isolated document storage and retrieval. It provides methods to upsert, search,
  * fetch, delete, and manage documents within the index.
@@ -24,7 +24,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Initializes a new SearchIndex instance for the specified namespace.
-   * 
+   *
    * @param vectorIndex - The underlying vector index used for search operations.
    * @param namespace - The namespace to use for this index. Must be a non-empty string.
    * @throws Will throw an error if the namespace is not provided.
@@ -41,9 +41,9 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Inserts or updates documents in the index.
-   * 
+   *
    * Documents are identified by their unique IDs. If a document with the same ID exists, it will be updated.
-   * 
+   *
    * @param params - A document or array of documents to upsert, including `id`, `data`, and optional `fields`.
    * @returns A promise resolving to the result of the upsert operation.
    */
@@ -62,13 +62,52 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Searches for documents matching a query string.
-   * 
+   *
    * Returns documents that best match the provided query, optionally filtered and limited in number.
-   * 
+   *
+   * @param params - Search parameters including `query`, optional `limit`, optional `filter` and optional `reranking`.
+   * @returns A promise resolving to an array of matching documents.
+   */
+  search = async (params: {
+    query: string;
+    limit?: number;
+    filter?: string;
+    reranking?: boolean;
+  }) => {
+    const { query, limit = 5, filter, reranking } = params;
+
+    // @ts-expect-error accessing protected property
+    const httpClient = this.vectorIndex.client;
+
+    const path = ["search", this.namespace];
+    const { result } = (await httpClient.request({
+      path,
+      body: {
+        query,
+        topK: limit,
+        includeData: true,
+        includeMetadata: true,
+        filter,
+        reranking,
+      },
+    })) as { result: QueryResult<TIndexMetadata>[] };
+
+    return result.map(({ id, data, metadata }) => ({
+      id,
+      data,
+      fields: metadata,
+    }));
+  };
+
+  /**
+   * Queries for documents matching a query string.
+   *
+   * Returns documents that best match the provided query, optionally filtered and limited in number.
+   *
    * @param params - Search parameters including `query`, optional `limit`, and optional `filter`.
    * @returns A promise resolving to an array of matching documents.
    */
-  search = async (params: { query: string; limit?: number; filter?: string }) => {
+  query = async (params: { query: string; limit?: number; filter?: string }) => {
     const { query, limit = 5, filter } = params;
 
     const result = await this.vectorIndex.query(
@@ -85,7 +124,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Fetches documents by their IDs from the index.
-   * 
+   *
    * @param params - An array of document IDs to retrieve.
    * @returns A promise resolving to an array of documents or `null` if a document is not found.
    */
@@ -109,7 +148,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Deletes documents by their IDs from the index.
-   * 
+   *
    * @param params - An array of document IDs to delete.
    * @returns A promise resolving to the result of the deletion operation.
    */
@@ -119,9 +158,9 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Retrieves documents within a specific range, with pagination support.
-   * 
+   *
    * Useful for paginating through large result sets by providing a `cursor`.
-   * 
+   *
    * @param params - Range parameters including `cursor`, `limit`, and ID `prefix`.
    * @returns A promise resolving to the next cursor and documents in the range.
    */
@@ -143,9 +182,9 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Clears all documents in the current index.
-   * 
+   *
    * Useful for resetting the index before or after tests, or when a clean state is needed.
-   * 
+   *
    * @returns A promise resolving to the result of the reset operation.
    */
   reset = async () => {
@@ -154,9 +193,9 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Deletes the entire index and all its documents.
-   * 
+   *
    * Use with caution, as this operation is irreversible.
-   * 
+   *
    * @returns A promise resolving to the result of the delete operation.
    */
   deleteIndex = async () => {
@@ -165,9 +204,9 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
   /**
    * Retrieves information about the current index.
-   * 
+   *
    * Provides document count and pending document count, indicating documents that are awaiting indexing.
-   * 
+   *
    * @returns A promise resolving to index information with document counts.
    */
   info = async () => {

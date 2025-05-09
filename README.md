@@ -36,9 +36,9 @@ import { Search } from "@upstash/search";
 
 type Metadata = {
   title: string;
-  genre: 'sci-fi' | 'fantasy' | 'horror' | 'action';
+  genre: "sci-fi" | "fantasy" | "horror" | "action";
   category: "classic" | "modern";
-}
+};
 
 // Initialize Search client
 const client = new Search({
@@ -54,38 +54,38 @@ await index.upsert([
   {
     id: "star-wars",
     data: "Star Wars is a sci-fi space opera.",
-    fields: { title: "Star Wars", genre: "sci-fi", category: "classic" }
+    fields: { title: "Star Wars", genre: "sci-fi", category: "classic" },
   },
   {
     id: "inception",
     data: "Inception is a mind-bending thriller.",
-    fields: { title: "Inception", genre: "action", category: "modern" }
-  }
+    fields: { title: "Inception", genre: "action", category: "modern" },
+  },
 ]);
 
 // Fetch documents by IDs
 const documents = await index.fetch({
-  ids: ["star-wars", "inception"]
+  ids: ["star-wars", "inception"],
 });
 console.log(documents);
 
 // Search documents by query
 const searchResults = await index.search({
   query: "space opera",
-  limit: 2
+  limit: 2,
 });
 console.log(searchResults);
 
 // Delete a document by ID
 await index.delete({
-  ids: ["star-wars"]
+  ids: ["star-wars"],
 });
 
 // Search within a document range
 const { nextCursor, documents: rangeDocuments } = await index.range({
   cursor: 0,
   limit: 1,
-  prefix: "in"
+  prefix: "in",
 });
 console.log(rangeDocuments);
 

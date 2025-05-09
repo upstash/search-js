@@ -9,7 +9,7 @@ export class Search {
 
   /**
    * Creates a new Search instance.
-   * 
+   *
    * @param vectorIndex - The underlying index used for search operations.
    */
   constructor(vectorIndex: VectorIndex) {
@@ -18,10 +18,10 @@ export class Search {
 
   /**
    * Returns a SearchIndex instance for a given index.
-   * 
-   * Each index is an isolated collection where documents can be added, 
+   *
+   * Each index is an isolated collection where documents can be added,
    * retrieved, searched, and deleted.
-   * 
+   *
    * @param namespace - The namespace to use as an index.
    * @returns A SearchIndex instance for managing documents within the namespace.
    */
@@ -31,22 +31,22 @@ export class Search {
     return new SearchIndex<TIndexMetadata>(this.vectorIndex, namespace);
   };
 
-/**
- * Retrieves a list of all available indexes.
- * 
- * @returns An array of strings representing the names of available indexes.
- */
+  /**
+   * Retrieves a list of all available indexes.
+   *
+   * @returns An array of strings representing the names of available indexes.
+   */
   listIndexes = async () => {
-    const indexes = await this.vectorIndex.listNamespaces()
+    const indexes = await this.vectorIndex.listNamespaces();
     return indexes.filter(Boolean);
   };
 
   /**
    * Retrieves overall search index statistics.
-   * 
-   * This includes disk usage, total document count, pending document count, 
+   *
+   * This includes disk usage, total document count, pending document count,
    * and details about each available index.
-   * 
+   *
    * @returns An object containing search system metrics and index details.
    */
   info = async () => {
