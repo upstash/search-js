@@ -69,7 +69,15 @@ const documents = await index.fetch({
 });
 console.log(documents);
 
-// Search documents by query
+// AI search with reranking:
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+  reranking: true
+});
+console.log(searchResults);
+
+// AI search without reranking:
 const searchResults = await index.search({
   query: "space opera",
   limit: 2,
