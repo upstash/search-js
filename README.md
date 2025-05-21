@@ -84,6 +84,14 @@ const searchResults = await index.search({
 });
 console.log(searchResults);
 
+// AI search with filter:
+const searchResults = await index.search({
+  query: "space",
+  limit: 2,
+  filter: "category = 'classic'",
+});
+
+
 // Delete a document by ID
 await index.delete({
   ids: ["star-wars"],
