@@ -100,29 +100,6 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
   };
 
   /**
-   * Queries for documents matching a query string.
-   *
-   * Returns documents that best match the provided query, optionally filtered and limited in number.
-   *
-   * @param params - Search parameters including `query`, optional `limit`, and optional `filter`.
-   * @returns A promise resolving to an array of matching documents.
-   */
-  query = async (params: { query: string; limit?: number; filter?: string }) => {
-    const { query, limit = 5, filter } = params;
-
-    const result = await this.vectorIndex.query(
-      { data: query, topK: limit, filter, includeData: true, includeMetadata: true },
-      { namespace: this.namespace }
-    );
-
-    return result.map(({ id, data, metadata }) => ({
-      id,
-      data,
-      fields: metadata,
-    }));
-  };
-
-  /**
    * Fetches documents by their IDs from the index.
    *
    * @param params - An array of document IDs to retrieve.
