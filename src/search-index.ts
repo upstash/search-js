@@ -141,7 +141,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    * @param params - Range parameters including `cursor`, `limit`, and ID `prefix`.
    * @returns A promise resolving to the next cursor and documents in the range.
    */
-  range = async (params: { cursor: number | string; limit: number; prefix?: string }) => {
+  range = async (params: { cursor: string; limit: number; prefix?: string }) => {
     const { nextCursor, vectors } = await this.vectorIndex.range(
       { ...params, includeData: true, includeMetadata: true },
       { namespace: this.namespace }
