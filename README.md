@@ -1,4 +1,4 @@
-# Upstash AI Search Node.js Client &middot; ![license](https://img.shields.io/npm/l/%40upstash%2Fsearch) [![Tests](https://github.com/upstash/search-js/actions/workflows/tests.yaml/badge.svg)](https://github.com/upstash/search-js/actions/workflows/tests.yaml) ![npm (scoped)](https://img.shields.io/npm/v/@upstash/search) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/@upstash/search) ![npm weekly download](https://img.shields.io/npm/dw/%40upstash%2Fsearch)
+# Upstash AI Search ![npm (scoped)](https://img.shields.io/npm/v/@upstash/search) ![npm bundle size](https://img.shields.io/bundlephobia/minzip/@upstash/search) ![npm weekly download](https://img.shields.io/npm/dw/%40upstash%2Fsearch)
 
 > [!NOTE]  
 > **This project is in GA Stage.**
