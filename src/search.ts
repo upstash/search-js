@@ -26,7 +26,7 @@ export class Search {
    * @param indexName - The name to use as an index.
    * @returns A SearchIndex instance for managing documents within the index.
    */
-  index = <TContent extends Dict = Dict, TIndexMetadata extends object = object>(
+  index = <TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict>(
     indexName: string
   ): SearchIndex<TContent, TIndexMetadata> => {
     return new SearchIndex<TContent, TIndexMetadata>(this.vectorIndex, indexName);

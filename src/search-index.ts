@@ -9,7 +9,7 @@ import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from
  *
  * @template TIndexMetadata - Metadata shape associated with each document.
  */
-export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends object = object> {
+export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
   private vectorIndex: VectorIndex;
 
   /**
