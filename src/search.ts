@@ -1,5 +1,6 @@
 import type { Index as VectorIndex } from "@upstash/vector";
 import { SearchIndex } from "./search-index";
+import type { Dict } from "./types";
 
 /**
  * Provides search capabilities over indexes.
@@ -22,13 +23,13 @@ export class Search {
    * Each index is an isolated collection where documents can be added,
    * retrieved, searched, and deleted.
    *
-   * @param namespace - The namespace to use as an index.
-   * @returns A SearchIndex instance for managing documents within the namespace.
+   * @param indexName - The name to use as an index.
+   * @returns A SearchIndex instance for managing documents within the index.
    */
-  index = <TIndexMetadata extends Record<string, unknown> = Record<string, unknown>>(
-    namespace: string
-  ): SearchIndex<TIndexMetadata> => {
-    return new SearchIndex<TIndexMetadata>(this.vectorIndex, namespace);
+  index = <TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict>(
+    indexName: string
+  ): SearchIndex<TContent, TIndexMetadata> => {
+    return new SearchIndex<TContent, TIndexMetadata>(this.vectorIndex, indexName);
   };
 
   /**
@@ -37,8 +38,7 @@ export class Search {
    * @returns An array of strings representing the names of available indexes.
    */
   listIndexes = async () => {
-    const indexes = await this.vectorIndex.listNamespaces();
-    return indexes.filter(Boolean);
+    return await this.vectorIndex.listNamespaces();
   };
 
   /**
@@ -55,7 +55,6 @@ export class Search {
 
     const indexes = Object.fromEntries(
       Object.entries(namespaces)
-        .filter((namespace) => namespace[0] !== "")
         .map((namespace) => [
           namespace[0],
           {

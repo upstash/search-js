@@ -2,8 +2,8 @@ import { describe, test, expect, beforeEach, afterEach } from "bun:test";
 import { Search } from "./platforms/nodejs";
 
 const client = Search.fromEnv();
-const NAMESPACE = "test-namespace";
-const searchIndex = client.index(NAMESPACE);
+const indexName = "test-index-name";
+const searchIndex = client.index<{ text: string }, { key: string }>(indexName);
 
 describe("SearchIndex", () => {
   beforeEach(async () => {
@@ -12,9 +12,9 @@ describe("SearchIndex", () => {
 
     // Insert test data
     await searchIndex.upsert([
-      { id: "id1", data: "test-data-1", fields: { key: "value1" } },
-      { id: "id2", data: "test-data-2", fields: { key: "value2" } },
-      { id: "different-id3", data: "different-test-data-3", fields: { key: "value3" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
+      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2" } },
+      { id: "different-id3", content: { text: "different-test-data-3" }, metadata: { key: "value3" } },
     ]);
 
     let info = await searchIndex.info();
@@ -38,8 +38,8 @@ describe("SearchIndex", () => {
     const results = await searchIndex.fetch({ ids: ["id1", "id2"] });
 
     expect(results).toEqual([
-      { id: "id1", data: "test-data-1", fields: { key: "value1" } },
-      { id: "id2", data: "test-data-2", fields: { key: "value2" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
+      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2" } },
     ]);
   });
 
@@ -47,14 +47,15 @@ describe("SearchIndex", () => {
     const results = await searchIndex.search({ query: "test-data-1", limit: 2 });
 
     expect(results).toEqual([
-      { id: "id1", data: "test-data-1", fields: { key: "value1" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" }, score: expect.any(Number) },
 
       {
-        data: "test-data-2",
-        fields: {
+        content: { text: "test-data-2" },
+        metadata: {
           key: "value2",
         },
         id: "id2",
+        score: expect.any(Number),
       },
     ]);
   });
@@ -85,12 +86,12 @@ describe("SearchIndex", () => {
 
   test("should search within a range", async () => {
     const { nextCursor, documents } = await searchIndex.range({
-      cursor: 0,
+      cursor: "0",
       limit: 1,
       prefix: "id",
     });
 
-    expect(documents).toEqual([{ id: "id1", data: "test-data-1", fields: { key: "value1" } }]);
+    expect(documents).toEqual([{ id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } }]);
 
     const { documents: nextDocuments } = await searchIndex.range({
       cursor: nextCursor,
@@ -100,8 +101,8 @@ describe("SearchIndex", () => {
 
     expect(nextDocuments).toEqual([
       {
-        data: "test-data-2",
-        fields: {
+        content: { text: "test-data-2" },
+        metadata: {
           key: "value2",
         },
         id: "id2",

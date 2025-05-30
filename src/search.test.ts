@@ -4,7 +4,7 @@ import { Index } from "@upstash/vector";
 
 const client = Search.fromEnv();
 const NAMESPACE = "test-namespace";
-const searchIndex = client.index(NAMESPACE);
+const searchIndex = client.index<{ text: string }, { key: string }>(NAMESPACE);
 const vectorIndex = new Index({
   url: process.env.UPSTASH_SEARCH_REST_URL,
   token: process.env.UPSTASH_SEARCH_REST_TOKEN,
@@ -13,16 +13,13 @@ const vectorIndex = new Index({
 describe("Search (Real Index)", () => {
   beforeAll(async () => {
     await searchIndex.reset(); // Clean namespace
-    await searchIndex.upsert({ id: "1", data: "test-data-1", fields: { key: "value1" } });
-    await searchIndex.upsert({ id: "2", data: "test-data-2", fields: { key: "value2" } });
-
-    // add a vector to the default namespace to check if it's hidden in the SDK
-    await vectorIndex.upsert({ id: "3", data: "test-data-3", metadata: { key: "value3" } });
+    await searchIndex.upsert({ id: "2", content: { text: "test-data-2" }, metadata: { key: "value2" } });
+    await searchIndex.upsert({ id: "1", content: { text: "test-data-1" }, metadata: { key: "value1" } });
   });
 
   afterAll(async () => {
     await searchIndex.deleteIndex(); // Clean up
-    await vectorIndex.reset();
+    await vectorIndex.reset({ all: true});
   });
 
   test("should get overall index info", async () => {

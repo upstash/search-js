@@ -1,13 +1,4 @@
-import type { QueryResult, Index as VectorIndex } from "@upstash/vector";
-
-type CommandParameters<TNonFieldsParams, TIndexMetadata> = keyof TIndexMetadata extends never
-  ? TNonFieldsParams & { fields?: never }
-  : TNonFieldsParams & { fields: TIndexMetadata };
-
-type UpsertParameters<TIndexMetadata extends Record<string, unknown>> = CommandParameters<
-  { id: string; data: string },
-  TIndexMetadata
->;
+import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
 
 /**
  * Represents a search index for managing and querying documents.
@@ -18,25 +9,22 @@ type UpsertParameters<TIndexMetadata extends Record<string, unknown>> = CommandP
  *
  * @template TIndexMetadata - Metadata shape associated with each document.
  */
-export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record<string, unknown>> {
+export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
   private vectorIndex: VectorIndex;
-  private namespace: string;
 
   /**
-   * Initializes a new SearchIndex instance for the specified namespace.
+   * Initializes a new SearchIndex instance for the specified index.
    *
    * @param vectorIndex - The underlying vector index used for search operations.
-   * @param namespace - The namespace to use for this index. Must be a non-empty string.
-   * @throws Will throw an error if the namespace is not provided.
+   * @param indexName - The name to use for this index. Must be a non-empty string.
+   * @throws Will throw an error if the indexn name is not provided.
    */
-  constructor(vectorIndex: VectorIndex, namespace: string) {
+  constructor(vectorIndex: VectorIndex, private indexName: string) {
     this.vectorIndex = vectorIndex;
 
-    if (!namespace) {
-      throw new Error("Namespace is required when defining a SearchIndex");
+    if (!indexName) {
+      throw new Error("indexName is required when defining a SearchIndex");
     }
-
-    this.namespace = namespace;
   }
 
   /**
@@ -44,20 +32,24 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    *
    * Documents are identified by their unique IDs. If a document with the same ID exists, it will be updated.
    *
-   * @param params - A document or array of documents to upsert, including `id`, `data`, and optional `fields`.
+   * @param params - A document or array of documents to upsert, including `id`, `content`, and optional `metadata`.
    * @returns A promise resolving to the result of the upsert operation.
    */
   upsert = async (
-    params: UpsertParameters<TIndexMetadata> | UpsertParameters<TIndexMetadata>[]
+    params: UpsertParameters<TContent, TIndexMetadata> | UpsertParameters<TContent, TIndexMetadata>[]
   ) => {
-    const arrayParams = Array.isArray(params) ? params : [params];
-    const upsertParams = arrayParams.map(({ id, data, fields }) => ({
-      id,
-      data,
-      metadata: fields,
-    }));
+    const upsertParams = Array.isArray(params) ? params : [params];
 
-    return await this.vectorIndex.upsert(upsertParams, { namespace: this.namespace });
+    // @ts-expect-error accessing protected property
+    const httpClient = this.vectorIndex.client;
+
+    const path = ["upsert-data", this.indexName];
+    const result: string = await httpClient.request({
+      path,
+      body: upsertParams,
+    }) as string;
+
+    return result;
   };
 
   /**
@@ -73,13 +65,13 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
     limit?: number;
     filter?: string;
     reranking?: boolean;
-  }) => {
+  }): Promise<SearchResult<TContent, TIndexMetadata>> => {
     const { query, limit = 5, filter, reranking } = params;
 
     // @ts-expect-error accessing protected property
     const httpClient = this.vectorIndex.client;
 
-    const path = ["search", this.namespace];
+    const path = ["search", this.indexName];
     const { result } = (await httpClient.request({
       path,
       body: {
@@ -90,12 +82,13 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
         filter,
         reranking,
       },
-    })) as { result: QueryResult<TIndexMetadata>[] };
+    })) as { result: SearchResult<TContent, TIndexMetadata> };
 
-    return result.map(({ id, data, metadata }) => ({
+    return result.map(({ id, content, metadata, score }) => ({
       id,
-      data,
-      fields: metadata,
+      content,
+      metadata,
+      score
     }));
   };
 
@@ -107,7 +100,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    */
   fetch = async (params: Parameters<VectorIndex["fetch"]>[0]) => {
     const result = await this.vectorIndex.fetch(params, {
-      namespace: this.namespace,
+      namespace: this.indexName,
       includeData: true,
       includeMetadata: true,
     });
@@ -117,8 +110,8 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
 
       return {
         id: fetchResult.id,
-        data: fetchResult.data,
-        fields: fetchResult.metadata,
+        content: (fetchResult as unknown as { content: TContent }).content,
+        metadata: fetchResult.metadata,
       };
     });
   };
@@ -130,7 +123,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    * @returns A promise resolving to the result of the deletion operation.
    */
   delete = async (params: Parameters<VectorIndex["delete"]>[0]) => {
-    return await this.vectorIndex.delete(params, { namespace: this.namespace });
+    return await this.vectorIndex.delete(params, { namespace: this.indexName });
   };
 
   /**
@@ -144,15 +137,15 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
   range = async (params: { cursor: string; limit: number; prefix?: string }) => {
     const { nextCursor, vectors } = await this.vectorIndex.range(
       { ...params, includeData: true, includeMetadata: true },
-      { namespace: this.namespace }
+      { namespace: this.indexName }
     );
 
     return {
       nextCursor,
-      documents: vectors.map(({ id, data, metadata }) => ({
+      documents: (vectors as unknown as Document<TContent, TIndexMetadata>[]).map(({ id, content, metadata }) => ({
         id,
-        data,
-        fields: metadata,
+        content,
+        metadata,
       })),
     };
   };
@@ -165,7 +158,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    * @returns A promise resolving to the result of the reset operation.
    */
   reset = async () => {
-    return await this.vectorIndex.reset({ namespace: this.namespace });
+    return await this.vectorIndex.reset({ namespace: this.indexName });
   };
 
   /**
@@ -176,7 +169,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    * @returns A promise resolving to the result of the delete operation.
    */
   deleteIndex = async () => {
-    return await this.vectorIndex.deleteNamespace(this.namespace);
+    return await this.vectorIndex.deleteNamespace(this.indexName);
   };
 
   /**
@@ -188,7 +181,7 @@ export class SearchIndex<TIndexMetadata extends Record<string, unknown> = Record
    */
   info = async () => {
     const info = await this.vectorIndex.info();
-    const { pendingVectorCount, vectorCount } = info.namespaces[this.namespace] ?? {
+    const { pendingVectorCount, vectorCount } = info.namespaces[this.indexName] ?? {
       pendingVectorCount: 0,
       vectorCount: 0,
     };
