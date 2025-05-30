@@ -2,14 +2,7 @@ export type { QueryResult, Index as VectorIndex } from "@upstash/vector";
 
 export type Dict = Record<string, unknown>;
 
-export type CommandParameters<TNonFieldsParams, TIndexMetadata> = keyof TIndexMetadata extends never
-  ? TNonFieldsParams & { metadata?: never }
-  : TNonFieldsParams & { metadata: TIndexMetadata };
-
-export type UpsertParameters<TContent extends Dict, TIndexMetadata extends Dict> = CommandParameters<
-  { id: string; content: TContent },
-  TIndexMetadata
->;
+export type UpsertParameters<TContent extends Dict, TIndexMetadata extends Dict> = { id: string; content: TContent, metadata?: TIndexMetadata }
 
 export type Document<TContent extends Dict, TMetadata extends Dict, TWithScore extends boolean = false> = {
   id: string;
