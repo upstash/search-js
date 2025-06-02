@@ -14,7 +14,11 @@ describe("SearchIndex", () => {
     await searchIndex.upsert([
       { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
       { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2" } },
-      { id: "different-id3", content: { text: "different-test-data-3" }, metadata: { key: "value3" } },
+      {
+        id: "different-id3",
+        content: { text: "different-test-data-3" },
+        metadata: { key: "value3" },
+      },
     ]);
 
     let info = await searchIndex.info();
@@ -47,7 +51,12 @@ describe("SearchIndex", () => {
     const results = await searchIndex.search({ query: "test-data-1", limit: 2 });
 
     expect(results).toEqual([
-      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" }, score: expect.any(Number) },
+      {
+        id: "id1",
+        content: { text: "test-data-1" },
+        metadata: { key: "value1" },
+        score: expect.any(Number),
+      },
 
       {
         content: { text: "test-data-2" },
@@ -91,7 +100,9 @@ describe("SearchIndex", () => {
       prefix: "id",
     });
 
-    expect(documents).toEqual([{ id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } }]);
+    expect(documents).toEqual([
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
+    ]);
 
     const { documents: nextDocuments } = await searchIndex.range({
       cursor: nextCursor,

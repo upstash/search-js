@@ -77,7 +77,7 @@ console.log(documents);
 const searchResults = await index.search({
   query: "space opera",
   limit: 2,
-  reranking: true
+  reranking: true,
 });
 console.log(searchResults);
 
@@ -94,7 +94,6 @@ const searchResults = await index.search({
   limit: 2,
   filter: "category = 'classic'",
 });
-
 
 // Delete a document by ID
 await index.delete({

@@ -13,13 +13,21 @@ const vectorIndex = new Index({
 describe("Search (Real Index)", () => {
   beforeAll(async () => {
     await searchIndex.reset(); // Clean namespace
-    await searchIndex.upsert({ id: "2", content: { text: "test-data-2" }, metadata: { key: "value2" } });
-    await searchIndex.upsert({ id: "1", content: { text: "test-data-1" }, metadata: { key: "value1" } });
+    await searchIndex.upsert({
+      id: "2",
+      content: { text: "test-data-2" },
+      metadata: { key: "value2" },
+    });
+    await searchIndex.upsert({
+      id: "1",
+      content: { text: "test-data-1" },
+      metadata: { key: "value1" },
+    });
   });
 
   afterAll(async () => {
     await searchIndex.deleteIndex(); // Clean up
-    await vectorIndex.reset({ all: true});
+    await vectorIndex.reset({ all: true });
   });
 
   test("should get overall index info", async () => {

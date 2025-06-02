@@ -1,6 +1,7 @@
-import type { Index as VectorIndex } from "@upstash/vector";
+import { Index as VectorIndex } from "@upstash/vector";
 import { SearchIndex } from "./search-index";
 import type { Dict } from "./types";
+import type { HttpClient } from "./client/search-client";
 
 /**
  * Provides search capabilities over indexes.
@@ -13,8 +14,8 @@ export class Search {
    *
    * @param vectorIndex - The underlying index used for search operations.
    */
-  constructor(vectorIndex: VectorIndex) {
-    this.vectorIndex = vectorIndex;
+  constructor(private client: HttpClient) {
+    this.vectorIndex = new VectorIndex(client);
   }
 
   /**
@@ -29,7 +30,7 @@ export class Search {
   index = <TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict>(
     indexName: string
   ): SearchIndex<TContent, TIndexMetadata> => {
-    return new SearchIndex<TContent, TIndexMetadata>(this.vectorIndex, indexName);
+    return new SearchIndex<TContent, TIndexMetadata>(this.client, this.vectorIndex, indexName);
   };
 
   /**
@@ -54,14 +55,13 @@ export class Search {
       await this.vectorIndex.info();
 
     const indexes = Object.fromEntries(
-      Object.entries(namespaces)
-        .map((namespace) => [
-          namespace[0],
-          {
-            pendingDocumentCount: namespace[1].pendingVectorCount,
-            documentCount: namespace[1].vectorCount,
-          },
-        ])
+      Object.entries(namespaces).map((namespace) => [
+        namespace[0],
+        {
+          pendingDocumentCount: namespace[1].pendingVectorCount,
+          documentCount: namespace[1].vectorCount,
+        },
+      ])
     );
 
     return {

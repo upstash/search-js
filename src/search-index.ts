@@ -1,3 +1,4 @@
+import type { HttpClient } from "./client/search-client";
 import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
 
 /**
@@ -7,11 +8,10 @@ import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from
  * isolated document storage and retrieval. It provides methods to upsert, search,
  * fetch, delete, and manage documents within the index.
  *
+ * @template TContent - Content shape associated with each document.
  * @template TIndexMetadata - Metadata shape associated with each document.
  */
 export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
-  private vectorIndex: VectorIndex;
-
   /**
    * Initializes a new SearchIndex instance for the specified index.
    *
@@ -19,9 +19,11 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * @param indexName - The name to use for this index. Must be a non-empty string.
    * @throws Will throw an error if the indexn name is not provided.
    */
-  constructor(vectorIndex: VectorIndex, private indexName: string) {
-    this.vectorIndex = vectorIndex;
-
+  constructor(
+    private httpClient: HttpClient,
+    private vectorIndex: VectorIndex,
+    private indexName: string
+  ) {
     if (!indexName) {
       throw new Error("indexName is required when defining a SearchIndex");
     }
@@ -36,18 +38,17 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * @returns A promise resolving to the result of the upsert operation.
    */
   upsert = async (
-    params: UpsertParameters<TContent, TIndexMetadata> | UpsertParameters<TContent, TIndexMetadata>[]
+    params:
+      | UpsertParameters<TContent, TIndexMetadata>
+      | UpsertParameters<TContent, TIndexMetadata>[]
   ) => {
     const upsertParams = Array.isArray(params) ? params : [params];
 
-    // @ts-expect-error accessing protected property
-    const httpClient = this.vectorIndex.client;
-
     const path = ["upsert-data", this.indexName];
-    const result: string = await httpClient.request({
+    const result: string = (await this.httpClient.request({
       path,
       body: upsertParams,
-    }) as string;
+    })) as string;
 
     return result;
   };
@@ -68,11 +69,8 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
   }): Promise<SearchResult<TContent, TIndexMetadata>> => {
     const { query, limit = 5, filter, reranking } = params;
 
-    // @ts-expect-error accessing protected property
-    const httpClient = this.vectorIndex.client;
-
     const path = ["search", this.indexName];
-    const { result } = (await httpClient.request({
+    const { result } = (await this.httpClient.request({
       path,
       body: {
         query,
@@ -88,7 +86,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
       id,
       content,
       metadata,
-      score
+      score,
     }));
   };
 
@@ -142,11 +140,13 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
 
     return {
       nextCursor,
-      documents: (vectors as unknown as Document<TContent, TIndexMetadata>[]).map(({ id, content, metadata }) => ({
-        id,
-        content,
-        metadata,
-      })),
+      documents: (vectors as unknown as Document<TContent, TIndexMetadata>[]).map(
+        ({ id, content, metadata }) => ({
+          id,
+          content,
+          metadata,
+        })
+      ),
     };
   };
 
