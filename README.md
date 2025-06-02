@@ -25,20 +25,24 @@ It is a connectionless (HTTP based) AI Search client and designed for:
 npm install @upstash/search
 ```
 
-### Create Collection
+### Create Database
 
-Create a new collection on [Upstash](https://console.upstash.com/search)
+Create a new database on [Upstash](https://console.upstash.com/search)
 
 ## Basic Usage:
 
 ```ts
 import { Search } from "@upstash/search";
 
-type Metadata = {
+type Content = {
   title: string;
   genre: "sci-fi" | "fantasy" | "horror" | "action";
   category: "classic" | "modern";
 };
+
+type Metadata = {
+  director: string
+}
 
 // Initialize Search client
 const client = new Search({
@@ -47,19 +51,19 @@ const client = new Search({
 });
 
 // Create or access a index
-const index = client.index<Metadata>("movies");
+const index = client.index<Content, Metadata>("movies");
 
 // Upsert data into the index
 await index.upsert([
   {
     id: "star-wars",
-    data: "Star Wars is a sci-fi space opera.",
-    fields: { title: "Star Wars", genre: "sci-fi", category: "classic" },
+    content: { title: "Star Wars", genre: "sci-fi", category: "classic" },
+    metadata: { director: "George Lucas" } ,
   },
   {
     id: "inception",
-    data: "Inception is a mind-bending thriller.",
-    fields: { title: "Inception", genre: "action", category: "modern" },
+    content: { title: "Inception", genre: "action", category: "modern" },
+    metadata: { director: "Christopher Nolan" }
   },
 ]);
 
