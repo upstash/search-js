@@ -20,7 +20,7 @@ export type IndexMetadata = {
 
 export type Dataset = {
   id: string
-  data: string
+  data: object
   metadata: IndexMetadata
   vector: number[]
   sparseVector: {
