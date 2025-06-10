@@ -46,8 +46,8 @@ type Metadata = {
 
 // Initialize Search client
 const client = new Search({
-  url: "<SEARCH_INDEX_REST_URL>",
-  token: "<SEARCH_INDEX_REST_TOKEN>",
+  url: "<UPSTASH_SEARCH_REST_URL>",
+  token: "<UPSTASH_SEARCH_REST_TOKEN>",
 });
 
 // Create or access a index

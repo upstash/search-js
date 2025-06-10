@@ -109,7 +109,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
       return {
         id: fetchResult.id,
         content: (fetchResult as unknown as { content: TContent }).content,
-        metadata: fetchResult.metadata,
+        metadata: fetchResult.metadata as TIndexMetadata,
       };
     });
   };
