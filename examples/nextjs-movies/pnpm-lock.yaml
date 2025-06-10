@@ -12,8 +12,8 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3(antd@5.26.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@upstash/search':
-        specifier: file:../..
-        version: file:../..
+        specifier: ^0.1.1
+        version: 0.1.1
       antd:
         specifier: ^5.26.0
         version: 5.26.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -717,8 +717,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@upstash/search@file:../..':
-    resolution: {directory: ../.., type: directory}
+  '@upstash/search@0.1.1':
+    resolution: {integrity: sha512-5OICK7E0AUNSQ75IsP0ENW7SC9qjzpOy/GU7T4ZvaBWE74RD3+uMxeR0Sg5EKClInm4or6nmRwpAnN1NKXx9Iw==}
 
   '@upstash/vector@1.2.1':
     resolution: {integrity: sha512-xKA9qTgbnPsxym/ymgwmaJbJHSTA6b5B1SNyTqJerV8322xn6eJM+p3xZPxKJYDPfSea7RgVxsTkhE9I/mOaOw==}
@@ -2805,7 +2805,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.7.13':
     optional: true
 
-  '@upstash/search@file:../..':
+  '@upstash/search@0.1.1':
     dependencies:
       '@upstash/vector': 1.2.1
 

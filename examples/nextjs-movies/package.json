@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@upstash/search": "file:../..",
+    "@upstash/search": "^0.1.1",
     "antd": "^5.26.0",
     "next": "15.3.3",
     "react": "^19.0.0",
