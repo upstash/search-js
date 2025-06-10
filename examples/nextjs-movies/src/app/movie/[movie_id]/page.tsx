@@ -32,6 +32,14 @@ function MovieDetailsWithSimilarMovies({ movie_id, reranking }: { movie_id: stri
     void fetchDetails();
   }, [movie_id]);
 
+  useEffect(() => {
+    if (movieDetails) {
+      document.title = `Upstash Search - ${movieDetails.content.title}`;
+    } else {
+      document.title = 'Upstash Search';
+    }
+  }, [movieDetails]);
+
   return (
     <>
       {!movieDetails ? (
