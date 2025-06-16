@@ -6,8 +6,8 @@ on:
   pull_request:
 
 env:
-  UPSTASH_SEARCH_REST_URL: ${{ secrets.UPSTASH_VECTOR_REST_URL }}
-  UPSTASH_SEARCH_REST_TOKEN: ${{ secrets.UPSTASH_VECTOR_REST_TOKEN }}
+  UPSTASH_SEARCH_REST_URL: ${{ secrets.UPSTASH_SEARCH_REST_URL }}
+  UPSTASH_SEARCH_REST_TOKEN: ${{ secrets.UPSTASH_SEARCH_REST_TOKEN }}
 jobs:
   test:
     runs-on: ubuntu-latest
