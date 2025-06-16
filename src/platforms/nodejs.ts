@@ -36,14 +36,17 @@ export class Search extends core.Search {
    * @param vectorIndex - The underlying index used for search operations.
    */
   constructor(params: ClientConfig) {
+    const environment =
+      typeof process === "undefined" ? ({} as Record<string, string>) : process.env;
+
     const token =
       params?.token ??
-      process.env.NEXT_PUBLIC_UPSTASH_VECTOR_REST_TOKEN ??
-      process.env.UPSTASH_VECTOR_REST_TOKEN;
+      environment.NEXT_PUBLIC_UPSTASH_SEARCH_REST_TOKEN ??
+      environment.UPSTASH_SEARCH_REST_TOKEN;
     const url =
       params?.url ??
-      process.env.NEXT_PUBLIC_UPSTASH_VECTOR_REST_URL ??
-      process.env.UPSTASH_VECTOR_REST_URL;
+      environment.NEXT_PUBLIC_UPSTASH_SEARCH_REST_URL ??
+      environment.UPSTASH_SEARCH_REST_URL;
 
     if (!token) {
       throw new UpstashError("UPSTASH_SEARCH_REST_TOKEN is missing!");
@@ -59,16 +62,16 @@ export class Search extends core.Search {
       console.warn("The vector token contains whitespace or newline, which can cause errors!");
     }
 
-    const enableTelemetry = process.env.UPSTASH_DISABLE_TELEMETRY
+    const enableTelemetry = environment.UPSTASH_DISABLE_TELEMETRY
       ? false
       : (params?.enableTelemetry ?? true);
 
     const telemetryHeaders: Record<string, string> = enableTelemetry
       ? {
           "Upstash-Telemetry-Sdk": `upstash-search-js@${VERSION}`,
-          "Upstash-Telemetry-Platform": process.env.VERCEL
+          "Upstash-Telemetry-Platform": environment.VERCEL
             ? "vercel"
-            : process.env.AWS_REGION
+            : environment.AWS_REGION
               ? "aws"
               : "unknown",
           "Upstash-Telemetry-Runtime": getRuntime(),
@@ -100,8 +103,8 @@ export class Search extends core.Search {
     },
     config?: Omit<ClientConfig, "url" | "token">
   ) => {
-    const url = env?.UPSTASH_SEARCH_REST_URL || process?.env.UPSTASH_SEARCH_REST_URL;
-    const token = env?.UPSTASH_SEARCH_REST_TOKEN || process?.env.UPSTASH_SEARCH_REST_TOKEN;
+    const url = env?.UPSTASH_SEARCH_REST_URL;
+    const token = env?.UPSTASH_SEARCH_REST_TOKEN;
 
     return new Search({ url, token, ...config });
   };
