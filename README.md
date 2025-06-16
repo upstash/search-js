@@ -41,8 +41,8 @@ type Content = {
 };
 
 type Metadata = {
-  director: string
-}
+  director: string;
+};
 
 // Initialize Search client
 const client = new Search({
@@ -58,12 +58,12 @@ await index.upsert([
   {
     id: "star-wars",
     content: { title: "Star Wars", genre: "sci-fi", category: "classic" },
-    metadata: { director: "George Lucas" } ,
+    metadata: { director: "George Lucas" },
   },
   {
     id: "inception",
     content: { title: "Inception", genre: "action", category: "modern" },
-    metadata: { director: "Christopher Nolan" }
+    metadata: { director: "Christopher Nolan" },
   },
 ]);
 
