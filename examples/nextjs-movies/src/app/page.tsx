@@ -39,7 +39,7 @@ function IntroSection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold text-emerald-800 mb-4">Welcome to the Movies Search App</h2>
+        <h2 className="text-3xl font-bold text-emerald-800 mb-4">Upstash Search - Movie Search Demo</h2>
         <p className="text-gray-700 mb-2">
           This app is powered by Upstash Search and allows you to upsert a movies dataset to your database and perform AI-powered searches on it.
         </p>
