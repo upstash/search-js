@@ -45,10 +45,10 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     const upsertParams = Array.isArray(params) ? params : [params];
 
     const path = ["upsert-data", this.indexName];
-    const result: string = (await this.httpClient.request({
+    const { result } = (await this.httpClient.request({
       path,
       body: upsertParams,
-    })) as string;
+    })) as { result: string, error: Error | undefined };
 
     return result;
   };
