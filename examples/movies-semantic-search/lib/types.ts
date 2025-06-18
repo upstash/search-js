@@ -1,22 +1,34 @@
-export type MovieMetadata = {
-  poster_link: string;
-  imdb_link: string;
-  popularity: number;
-  vote_average: number;
-  movie_id: string;
+
+export type IndexContent = {
+  title: string;
+  release_date: string;
+  overview: string;
+  genres: string;
+  director: string;
+  cast: string;
+}
+
+export type IndexMetadata = {
+  movie_id: number;
   name: string;
-  release_year: number;
-  vote_count: string;
+  release_year: string;
+  vote_average: number;
+  vote_count: number;
+  imdb_link: string;
+  poster_link: string;
+  popularity: number;
 };
 
-export type Movie = {
-  total: number;
-  id: number | string;
-  score: number;
-  vector?: number[];
-  metadata?: MovieMetadata | undefined;
-  data?: string;
-};
+export type Dataset = {
+  id: string
+  data: object
+  metadata: IndexMetadata
+  vector: number[]
+  sparseVector: {
+    indices: number[]
+    values: number[]
+  }
+}[]
 
 export enum ResultCode {
   Empty = "EMPTY",
@@ -27,5 +39,5 @@ export enum ResultCode {
 
 export interface Result {
   code: ResultCode;
-  movies: Movie[];
+  movies: { content: IndexContent, metadata: IndexMetadata, score: number }[];
 }

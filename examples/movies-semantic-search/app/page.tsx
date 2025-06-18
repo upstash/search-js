@@ -5,7 +5,7 @@ import SearchForm from "@/components/search-form";
 import ResultData from "@/components/result-data";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMovies } from "@/app/actions";
+import { fetchSimilarMovies } from "@/app/actions";
 import { Info } from "@/components/info";
 
 export default function Page() {
@@ -13,7 +13,7 @@ export default function Page() {
 
   const state = useQuery({
     queryKey: ["movies", query],
-    queryFn: async () => await getMovies(query),
+    queryFn: async () => await fetchSimilarMovies({query, limit: 10}),
     initialData: {
       movies: [],
       code: ResultCode.Empty,
@@ -36,7 +36,7 @@ export default function Page() {
           onClick={() => onChangeQuery("")}
           className="cursor-pointer text-3xl md:text-5xl tracking-tight font-bold text-indigo-900"
         >
-          Movies Semantic Search
+          Movies AI Search
         </h1>
       </header>
 

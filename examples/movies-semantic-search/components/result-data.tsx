@@ -112,7 +112,6 @@ export default function ResultData({
                 value={movie.metadata?.popularity!}
               />
               <KeyValue label="Relevance" value={movie.score.toFixed(2)} />
-              <KeyValue label="Score" value={movie.total.toFixed(2)} />
             </div>
           </div>
         </a>

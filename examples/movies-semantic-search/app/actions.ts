@@ -1,16 +1,35 @@
-"use server";
+"use server"
 
-import { Index } from "@upstash/vector";
 import { z } from "zod";
-import { MovieMetadata, Result, ResultCode } from "@/lib/types";
-import { normalize } from "@/lib/utils";
+import { Search } from '@upstash/search';
+import movies from './movies.json';
+import { ResultCode, Dataset, IndexContent, IndexMetadata, Result } from '@/lib/types';
+import { BATCH_SIZE, INDEX_NAME } from "@/lib/constants";
 
-const index = new Index<MovieMetadata>({
-  url: process.env.UPSTASH_VECTOR_REST_URL,
-  token: process.env.UPSTASH_VECTOR_REST_TOKEN,
+const client = new Search({
+  url: process.env.UPSTASH_SEARCH_REST_URL!,
+  token: process.env.UPSTASH_SEARCH_REST_TOKEN!,
 });
 
-export async function getMovies(query: string): Promise<Result | undefined> {
+const index = client.index<IndexContent, IndexMetadata>(INDEX_NAME);
+
+const rerankingEnabled = process.env.RERANKING_ENABLED === 'true';
+
+export async function fetchMovie(movie_id: string) {
+  const response = await index.fetch({ ids: [movie_id] })
+
+  const movie = response[0];
+
+  if (!movie) {
+    throw new Error(`Movie with ID ${movie_id} not found`);
+  }
+
+  return movie
+}
+
+export async function fetchSimilarMovies(options: { query: string, limit: number, filter?: string }): Promise<Result> {
+  const { query, limit, filter } = options;
+
   try {
     const parsedCredentials = z
       .object({
@@ -27,75 +46,50 @@ export async function getMovies(query: string): Promise<Result | undefined> {
       };
     }
 
-    const response = await index.query<MovieMetadata>({
-      data: query as string,
-      topK: 50,
-      includeVectors: false,
-      includeMetadata: true,
+    const response = await index.search({
+      query,
+      limit,
+      filter,
+      reranking: rerankingEnabled,
     });
-
-    if (!response || !Array.isArray(response)) {
-      console.error("Unexpected response structure:", response);
-      return {
-        code: ResultCode.UnknownError,
-        movies: [],
-      };
-    }
-
-    const filteredResponse = response.filter(
-      (movie) =>
-        movie.metadata?.poster_link !== null &&
-        !movie.metadata?.poster_link.endsWith("null") &&
-        movie.metadata?.imdb_link !== "IMDb link not available",
-    );
-
-    // Extract vote counts and ratings for normalization
-    const popularity = filteredResponse.map(
-      (movie) => movie.metadata?.popularity ?? 0,
-    );
-    const ratings = filteredResponse.map(
-      (movie) => movie.metadata?.vote_average ?? 0,
-    );
-
-    const minPopularity = Math.min(...popularity);
-    const maxPopularity = Math.max(...popularity);
-    const minRating = Math.min(...ratings);
-    const maxRating = Math.max(...ratings);
-
-    const movies = filteredResponse.map((match) => {
-      const normalizedPopularity = normalize(
-        match.metadata?.popularity ?? 0,
-        minPopularity,
-        maxPopularity,
-      );
-
-      const normalizedRating = normalize(
-        match.metadata?.vote_average ?? 0,
-        minRating,
-        maxRating,
-      );
-
-      const relevance = match.score; // Assuming this is already normalized between 0 and 1
-
-      const total =
-        0.5 * normalizedPopularity + 0.2 * normalizedRating + 0.3 * relevance;
-      return {
-        ...match,
-        total,
-      };
-    });
-
-    movies.sort((a, b) => b.total - a.total);
 
     return {
       code: ResultCode.Success,
-      movies: movies,
+      movies: response as Result['movies'],
     };
   } catch (error) {
-    console.error("Error querying Upstash:", error);
     return {
       code: ResultCode.UnknownError,
       movies: [],
     };
+  }
+}
+
+
+
+export async function upsertData() {
+  const dataset = movies as Dataset;
+
+  for (let index_ = 0; index_ < dataset.length; index_ += BATCH_SIZE) {
+    const batch = dataset.slice(index_, index_ + BATCH_SIZE).map((data) => {
+      const { data: content, ...rest } = data;
+      return {
+        ...rest,
+        content,
+      };
+    });
+
+    await fetch(
+      `${process.env.UPSTASH_SEARCH_REST_URL}/upsert/${INDEX_NAME}`,
+      {
+        headers: {
+          authorization: `Bearer ${process.env.UPSTASH_SEARCH_REST_TOKEN}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(batch),
+        method: 'POST',
+        keepalive: false,
+      }
+    );
   }
 }

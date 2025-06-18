@@ -3,8 +3,8 @@ import { Metadata } from "next";
 import { Providers } from "@/app/providers";
 
 export const metadata: Metadata = {
-  title: "Movies Semantic Search",
-  description: "Semantic search for movies and TV series using TMDB data",
+  title: "Movies AI Search",
+  description: "AI Search for movies and TV series using TMDB data",
   icons: {
     icon: "/favicon-32x32.png",
   },

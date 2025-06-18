@@ -11,10 +11,9 @@ export const Info = ({ className }: React.ComponentProps<"div">) => {
     >
       <p>
         This project is an experiment to demonstrate the search quality of
-        Upstash Vector using the TMDB movie dataset. We vectorized{" "}
-        <b>71,673 TMDB movies</b> into a single Upstash Vector index and
-        searched them across multiple dimensions, including title, abstract, and
-        cast.
+        Upstash Search using a movie dataset. With this app, you can upsert
+        a dataset to your search database and search for movies them across
+        multiple dimensions.
       </p>
 
       <p>
@@ -23,7 +22,7 @@ export const Info = ({ className }: React.ComponentProps<"div">) => {
           <a
             className="underline"
             target="_blank"
-            href="https://github.com/upstash/movies-semantic-search"
+            href="https://github.com/upstash/search-js/tree/main/examples/nextjs-movies"
           >
             Github Repo
           </a>
