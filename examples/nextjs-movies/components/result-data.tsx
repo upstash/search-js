@@ -4,8 +4,8 @@ import type { DefinedUseQueryResult } from "@tanstack/react-query";
 
 export default function ResultData({
   state,
-  onChangeQuery = () => {},
-  onSubmit = () => {},
+  onChangeQuery = () => { },
+  onSubmit = () => { },
 }: {
   state: DefinedUseQueryResult<Result | undefined, Error>;
   onChangeQuery: (q: string) => void;
@@ -43,11 +43,11 @@ export default function ResultData({
           <button
             className="underline font-bold"
             onClick={() => {
-              onChangeQuery("a mafia movie in 1940s New York");
+              onChangeQuery("an epic space adventure");
               setTimeout(() => onSubmit(), 100);
             }}
           >
-            a mafia movie in 1940s New York
+            an epic space adventure
           </button>
         </li>
 
@@ -58,11 +58,11 @@ export default function ResultData({
           <button
             className="underline font-bold"
             onClick={() => {
-              onChangeQuery("a movie where a detective solves a mystery");
+              onChangeQuery("a crime saga about a powerful mafia family");
               setTimeout(() => onSubmit(), 100);
             }}
           >
-            a movie where a detective solves a mystery
+            a crime saga about a powerful mafia family
           </button>
         </li>
 
@@ -73,11 +73,11 @@ export default function ResultData({
           <button
             className="underline font-bold"
             onClick={() => {
-              onChangeQuery("a fantasy film with dragons");
+              onChangeQuery("a sci-fi film where reality is questioned by a computer hacker");
               setTimeout(() => onSubmit(), 100);
             }}
           >
-            a fantasy film with dragons
+            a sci-fi film where reality is questioned by a computer hacker
           </button>
         </li>
       </ol>
