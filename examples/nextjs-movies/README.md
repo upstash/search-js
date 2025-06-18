@@ -1,21 +1,21 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fupstash%2Fsearch-js%2Ftree%2Fmain%2Fexamples%2Fnextjs-movies&env=UPSTASH_SEARCH_REST_URL,UPSTASH_SEARCH_REST_TOKEN&project-name=upstash-search-movies)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fupstash%2Fsearch-js%2Ftree%2Fmain%2Fexamples%2Fnextjs-movies&env=UPSTASH_SEARCH_REST_URL,UPSTASH_SEARCH_REST_TOKEN&project-name=upstash-search-movies-semantic)
 
 # Upstash Search - Movies Example
 
-This is a [Next.js](https://nextjs.org) application demonstrating the capabilities of [Upstash Search](https://upstash.com/docs/search). It allows you to search for movies from a dataset and view their details.
+This is a [Next.js](https://nextjs.org) application demonstrating the semantic search capabilities of [Upstash Search](https://upstash.com/docs/search). It allows you to search for movies using natural language queries and find semantically similar content from a movie dataset.
 
 ## Features
 
-- **AI-Powered Search:** Utilizes Upstash Search to find movies based on your queries.
-- **Movie Details:** View more information about a specific movie by clicking on it.
-- **Data Upsert (Localhost only):** A button to easily populate your Upstash Search database with the movie dataset. This feature is available only when running the application in a localhost environment.
+- **Semantic Search:** Utilizes Upstash Search's AI-powered semantic search to find movies based on meaning and context, not just keywords.
+- **Movie Details:** View detailed information about specific movies by clicking on search results.
+- **Smart Filtering:** Advanced search capabilities that understand the intent behind your queries.
+- **Command-line Data Import:** Easy setup with a dedicated script to populate your database.
 
 ## Setup
 
 Follow these steps to get the application running:
 
 1.  **Install Dependencies:**
-    Open your terminal and navigate to the project directory (`examples/nextjs-movies`). Then run:
     ```bash
     npm install
     ```
@@ -25,26 +25,34 @@ Follow these steps to get the application running:
     - Once created, copy your `UPSTASH_SEARCH_REST_URL` and `UPSTASH_SEARCH_REST_TOKEN`.
 
 3.  **Set Environment Variables:**
-    Create a `.env.local` file in the `examples/nextjs-movies` directory and add your credentials:
+    Create a `.env` file in the project root and add your credentials:
     ```env
     UPSTASH_SEARCH_REST_URL="YOUR_UPSTASH_SEARCH_REST_URL"
     UPSTASH_SEARCH_REST_TOKEN="YOUR_UPSTASH_SEARCH_REST_TOKEN"
     ```
-    Replace `"YOUR_UPSTASH_SEARCH_REST_URL"` and `"YOUR_UPSTASH_SEARCH_REST_TOKEN"` with the actual values you copied.
+    Replace the placeholder values with your actual Upstash Search credentials.
 
-4.  **Start the Development Server:**
+    You can also control [reranking](https://upstash.com/docs/search/features/reranking) through env variables. If you want to enable reranking, set env variable `RERANKING_ENABLED` to `true`. Reranking is disabled by default.
+    
+4.  **Populate the Database:**
+    Run the data upsert script to populate your Upstash Search database with the movie dataset:
+    ```bash
+    npm run upsert-data
+    ```
+    This script will process and upload all movie data to your database. You'll see progress logs as batches are uploaded.
+
+5.  **Start the Development Server:**
     ```bash
     npm run dev
     ```
-    This will typically start the app on `http://localhost:3000`.
-
-5.  **Upsert Movie Data:**
-    - Open your browser and navigate to `http://localhost:3000`.
-    - You should see an "Upsert Data" button. Click this button to populate your Upstash Search database with the movie dataset.
-    - **Note:** This button is only visible and functional when the application is running in a localhost environment.
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
 6.  **Search for Movies:**
-    Once the data is upserted, you can use the search bar to find movies. Try example queries or search for your favorite films!
+    Try semantic search queries like:
+    - "space adventure with robots"
+    - "romantic comedy in Paris"
+    - "thriller about artificial intelligence"
+    - "superhero movie with humor"
 
 ## Learn More About Upstash Search
 
