@@ -1,11 +1,12 @@
 
 export type IndexContent = {
-  title: string;
+  title?: string;
   release_date: string;
   overview: string;
   genres: string;
   director: string;
   cast: string;
+  name?: string
 }
 
 export type IndexMetadata = {
