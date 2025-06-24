@@ -1,4 +1,4 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fupstash%2Fsearch-js%2Ftree%2Fmain%2Fexamples%2Fnextjs-movies&env=UPSTASH_SEARCH_REST_URL,UPSTASH_SEARCH_REST_TOKEN&project-name=upstash-search-movies-semantic)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fupstash%2Fsearch-js%2Ftree%2Fmain%2Fexamples%2Fnextjs-movies&project-name=search-movies&repository-name=search-movies&products=%5B%7B%22type%22%3A%22integration%22%2C%22integrationSlug%22%3A%22upstash%22%2C%22productSlug%22%3A%22upstash-search%22%2C%22protocol%22%3A%22storage%22%2C%22group%22%3A%22%22%7D%5D)
 
 # Upstash Search - Movies Example
 
