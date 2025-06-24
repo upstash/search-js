@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  b,
+  strong {
+    @apply font-bold;
+  }
+
+  input::placeholder {
+    @apply text-indigo-900/40;
+  }
+}
