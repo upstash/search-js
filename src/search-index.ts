@@ -1,3 +1,4 @@
+import { constructFilterString, type TreeNode } from "./client/metadata";
 import type { HttpClient } from "./client/search-client";
 import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
 
@@ -48,7 +49,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     const { result } = (await this.httpClient.request({
       path,
       body: upsertParams,
-    })) as { result: string, error: Error | undefined };
+    })) as { result: string; error: Error | undefined };
 
     return result;
   };
@@ -64,7 +65,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
   search = async (params: {
     query: string;
     limit?: number;
-    filter?: string;
+    filter?: string | TreeNode<TContent>;
     reranking?: boolean;
   }): Promise<SearchResult<TContent, TIndexMetadata>> => {
     const { query, limit = 5, filter, reranking } = params;
@@ -77,7 +78,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
         topK: limit,
         includeData: true,
         includeMetadata: true,
-        filter,
+        filter: typeof filter === "string" || filter === undefined ? filter : constructFilterString(filter),
         reranking,
       },
     })) as { result: SearchResult<TContent, TIndexMetadata> };
