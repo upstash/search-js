@@ -78,7 +78,10 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
         topK: limit,
         includeData: true,
         includeMetadata: true,
-        filter: typeof filter === "string" || filter === undefined ? filter : constructFilterString(filter),
+        filter:
+          typeof filter === "string" || filter === undefined
+            ? filter
+            : constructFilterString(filter),
         reranking,
       },
     })) as { result: SearchResult<TContent, TIndexMetadata> };

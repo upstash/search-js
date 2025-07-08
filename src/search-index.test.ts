@@ -48,7 +48,11 @@ describe("SearchIndex", () => {
   });
 
   test("should search and return results", async () => {
-    const results = await searchIndex.search({ query: "test-data-1", limit: 2, filter: "text GLOB 'test*'" });
+    const results = await searchIndex.search({
+      query: "test-data-1",
+      limit: 2,
+      filter: "text GLOB 'test*'",
+    });
 
     expect(results).toEqual([
       {
