@@ -48,7 +48,11 @@ describe("SearchIndex", () => {
   });
 
   test("should search and return results", async () => {
-    const results = await searchIndex.search({ query: "test-data-1", limit: 2 });
+    const results = await searchIndex.search({
+      query: "test-data-1",
+      limit: 2,
+      filter: "text GLOB 'test*'",
+    });
 
     expect(results).toEqual([
       {
@@ -64,6 +68,23 @@ describe("SearchIndex", () => {
           key: "value2",
         },
         id: "id2",
+        score: expect.any(Number),
+      },
+    ]);
+  });
+
+  test("should search with a filter", async () => {
+    const results = await searchIndex.search({
+      query: "test-data",
+      limit: 2,
+      filter: { AND: [{ text: { glob: "test-data-1" } }] },
+    });
+
+    expect(results).toEqual([
+      {
+        id: "id1",
+        content: { text: "test-data-1" },
+        metadata: { key: "value1" },
         score: expect.any(Number),
       },
     ]);
