@@ -4,6 +4,7 @@ import { SearchBar } from "@upstash/search-ui"
 import "@upstash/search-ui/dist/index.css"
 import { Search } from "@upstash/search"
 import { FileText } from "lucide-react"
+import { getIndexColor } from "@/utils/colors"
 
 // Initialize Upstash Search client
 const client = new Search({
@@ -27,50 +28,49 @@ interface SearchResult {
   indexName?: string
 }
 
+async function searchDocs(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return []
 
-  async function searchDocs(query: string): Promise<SearchResult[]> {
-    if (!query.trim()) return []
+  try {
+    const indexes = await client.listIndexes()
 
-    try {
-      const indexes = await client.listIndexes()
-
-      const searchPromises = indexes.map(async (indexName) => {
-        try {
-          const index = client.index(indexName)
-          const searchParams: any = {
-            query,
-            limit: 10,
-            reranking: true
-          }
-
-          const results = await index.search(searchParams)
-
-          return (results as any[]).map((result, i) => ({
-            ...result,
-            id: `${indexName}-${result.id}`,
-            indexName
-          }))
-        } catch (error) {
-          console.error(`Error searching ${indexName}:`, error)
-          return []
+    const searchPromises = indexes.map(async (indexName) => {
+      try {
+        const index = client.index(indexName)
+        const searchParams: any = {
+          query,
+          limit: 10,
+          reranking: true
         }
-      })
 
-      const resultArrays = await Promise.all(searchPromises)
+        const results = await index.search(searchParams)
 
-      const allResults = resultArrays.flat() as SearchResult[]
+        return (results as any[]).map((result, i) => ({
+          ...result,
+          id: `${indexName}-${result.id}`,
+          indexName
+        }))
+      } catch (error) {
+        console.error(`Error searching ${indexName}:`, error)
+        return []
+      }
+    })
 
-      const topResults = allResults
-        .sort((a, b) => (b.score || 0) - (a.score || 0))
-        .slice(0, 10)
+    const resultArrays = await Promise.all(searchPromises)
 
-      return topResults
+    const allResults = resultArrays.flat() as SearchResult[]
 
-    } catch (error) {
-      console.error('Search error:', error)
-      return []
-    }
+    const topResults = allResults
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 10)
+
+    return topResults
+
+  } catch (error) {
+    console.error('Search error:', error)
+    return []
   }
+}
 
 
 export default function SearchComponent() {
@@ -97,9 +97,11 @@ export default function SearchComponent() {
                     <SearchBar.ResultTitle onClick={() => {
                       window.open(result.metadata?.url, "_blank")
                     }}>
-                      {result.content?.title}
+
+                      {result.content?.title} <span className={`text-xs px-2 py-1 rounded ${getIndexColor(result.indexName || '')}`}>{result.indexName}</span>
                     </SearchBar.ResultTitle>
-                    <p className="text-xs text-gray-500 mt-0.5">{result.indexName}</p>
+
+                    <p className="text-xs text-gray-500 mt-0.5">{`${result.content.fullContent.slice(0, 100)}...`}</p>
                   </SearchBar.ResultContent>
                 </SearchBar.Result>
               )}
