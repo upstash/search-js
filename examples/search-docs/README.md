@@ -14,7 +14,7 @@ npm run dev
 
 ## How it Works
 - Search: Uses Upstash Search UI to query multiple indexes in parallel, sorts and groups results, and displays them with section headers.
-- Recent Updates: Upstash Qstash fetches all documents from multiple indexes in batches, filters for those crawled in the last 24 hours.
+- Recent Updates: Upstash Qstash fetches all documents from multiple indexes in batches, filters for those crawled in the last week.
 
 ## Set the Crawler
 

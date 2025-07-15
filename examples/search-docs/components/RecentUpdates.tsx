@@ -32,7 +32,7 @@ async function getLatestDocs(): Promise<SearchResult[]> {
     
     const currentDate = new Date()
     currentDate.setDate(currentDate.getDate() - 7)
-    const oneDayAgo = currentDate.getTime()
+    const oneWeekAgo = currentDate.getTime()
     
     const rangePromises = indexes.map(async (indexName) => {
       try {
@@ -50,7 +50,7 @@ async function getLatestDocs(): Promise<SearchResult[]> {
             .filter(result => {
               if (!result.metadata?.crawledAt) return false
               const crawledTime = new Date(result.metadata.crawledAt as string).getTime()
-              return crawledTime >= oneDayAgo
+              return crawledTime >= oneWeekAgo
             })
             .map((result) => ({
               ...result,
