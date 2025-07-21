@@ -1,3 +1,4 @@
+import { UpstashError } from "./client/error";
 import { constructFilterString, type TreeNode } from "./client/metadata";
 import type { HttpClient } from "./client/search-client";
 import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
@@ -59,16 +60,29 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *
    * Returns documents that best match the provided query, optionally filtered and limited in number.
    *
-   * @param params - Search parameters including `query`, optional `limit`, optional `filter` and optional `reranking`.
-   * @returns A promise resolving to an array of matching documents.
+   * @param query - Text string used to find matching documents within the index.
+   * @param limit - Maximum number of results to retrieve (defaults to 5 documents).
+   * @param filter - Optional search constraint using either a string expression or structured filter object.
+   * @param reranking - Optional boolean to enhance search result ordering.
+   * @param semanticWeight - Optional relevance balance between semantic and keyword search (0-1 range, defaults to 0.75).
+   *   For instance, 0.2 applies 20% semantic matching with 80% full-text matching.
+   *   You can learn more about how Upstash Search works from [our docs](https://upstash.com/docs/search/features/algorithm).
+   * @param inputEnrichment - Optional boolean to enhance queries before searching (enabled by default).
+   * @returns Promise that resolves to an array of documents matching the
    */
   search = async (params: {
     query: string;
     limit?: number;
     filter?: string | TreeNode<TContent>;
     reranking?: boolean;
+    semanticWeight?: number;
+    inputEnrichment?: boolean;
   }): Promise<SearchResult<TContent, TIndexMetadata>> => {
-    const { query, limit = 5, filter, reranking } = params;
+    const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment } = params;
+
+    if (semanticWeight && (semanticWeight < 0 || semanticWeight > 1)) {
+      throw new UpstashError("semanticWeight must be between 0 and 1");
+    }
 
     const path = ["search", this.indexName];
     const { result } = (await this.httpClient.request({
@@ -83,6 +97,8 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
             ? filter
             : constructFilterString(filter),
         reranking,
+        semanticWeight,
+        inputEnrichment,
       },
     })) as { result: SearchResult<TContent, TIndexMetadata> };
 
