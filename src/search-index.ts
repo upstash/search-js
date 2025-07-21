@@ -1,3 +1,4 @@
+import { UpstashError } from "./client/error";
 import { constructFilterString, type TreeNode } from "./client/metadata";
 import type { HttpClient } from "./client/search-client";
 import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
@@ -80,7 +81,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment } = params;
 
     if (semanticWeight && (semanticWeight < 0 || semanticWeight > 1)) {
-      throw new Error("semanticWeight must be between 0 and 1");
+      throw new UpstashError("semanticWeight must be between 0 and 1");
     }
 
     const path = ["search", this.indexName];
