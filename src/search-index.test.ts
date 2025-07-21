@@ -78,6 +78,8 @@ describe("SearchIndex", () => {
       query: "test-data",
       limit: 2,
       filter: { AND: [{ text: { glob: "test-data-1" } }] },
+      semanticWeight: 0.5,
+      inputEnrichment: false,
     });
 
     expect(results).toEqual([
