@@ -88,6 +88,34 @@ const searchResults = await index.search({
 });
 console.log(searchResults);
 
+// AI search with only semantic search
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+  semanticWeight: 1,
+});
+
+// AI search with only full text search
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+  semanticWeight: 0,
+});
+
+// AI search without input enrichment
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+  inputEnrichment: false,
+});
+
+// AI search without reranking:
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+});
+console.log(searchResults);
+
 // AI search with filter:
 const searchResults = await index.search({
   query: "space",
