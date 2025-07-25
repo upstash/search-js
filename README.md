@@ -95,11 +95,19 @@ const searchResults = await index.search({
   semanticWeight: 1,
 });
 
-// AI search with only full text search
+// AI search with only full-text search
 const searchResults = await index.search({
   query: "space opera",
   limit: 2,
   semanticWeight: 0,
+});
+
+// AI search with full-text search and sematic search
+// combined with equal weights
+const searchResults = await index.search({
+  query: "space opera",
+  limit: 2,
+  semanticWeight: 0.5,
 });
 
 // AI search without input enrichment
