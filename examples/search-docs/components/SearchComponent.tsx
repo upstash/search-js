@@ -8,8 +8,8 @@ import { getIndexColor } from "@/utils/colors"
 
 // Initialize Upstash Search client
 const client = new Search({
-  url: process.env.NEXT_PUBLIC_UPSTASH_SEARCH_URL || "<UPSTASH_SEARCH_URL>",
-  token: process.env.NEXT_PUBLIC_UPSTASH_SEARCH_READONLY_TOKEN || "<YOUR_SEARCH_READONLY_TOKEN>",
+  url: process.env.NEXT_PUBLIC_UPSTASH_SEARCH_URL || "",
+  token: process.env.NEXT_PUBLIC_UPSTASH_SEARCH_READONLY_TOKEN || "",
 })
 
 interface SearchResult {
