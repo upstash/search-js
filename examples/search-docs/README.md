@@ -26,10 +26,10 @@ Follow these steps to get the application running:
     ```
     
 4.  **Populate the Database:**
-    Now that we deployed the peoject, our crawler resides at `/api/crawl`.
+    Now that we deployed the project, our crawler resides at `/api/crawl`.
 
-    - Upstash Qstash can call this endpoint: `/api/crawl` on schedule to crawl the relevant data and upsert it to the specified Search Database
-    - Providing the URL and the index name in the body, you may manage the crawler from [upstash console](https://console.upstash.com/qstash/request-builder),
+    - Upstash Qstash can call the `/api/crawl` endpoint with a schedule to crawl the relevant data and upsert it to the specified Search Database
+    - Providing the URL and the index name in the body, you may manage the crawler from [Upstash Console](https://console.upstash.com/qstash/request-builder),
     e.g.
 
     ```
@@ -44,7 +44,5 @@ Follow these steps to get the application running:
 
 
 ## Final Remarks
-Since the crawler works incrementally, as it crawls on schedule it will discard the obsolete data
-and upsert the new or updated data instead.
 
-
+The crawler operates incrementally, automatically discarding outdated content and keeping your Search database synchronized with the latest website updates each time it runs on schedule. 
