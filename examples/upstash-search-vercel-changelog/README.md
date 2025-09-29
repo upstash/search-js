@@ -8,7 +8,7 @@ A Next.js application that provides search functionality for Vercel's changelog 
 
 - **Full-text & Semantic Search**: Search through Vercel changelog entries with full text and semantic search capabilities
 - **Input Enrichment & Reranking**: Enriches search queries and reranks search results
-- **Date & Content Type Filtering**: Filter results by date range (From/Until dates) and content type (Blog/Changlog)
+- **Date & Content Type Filtering**: Filter results by date range (From/Until dates) and content type (Blog/Changelog)
 - **Search Scoring**: Display relevance scores for search results
 
 ## Setup
