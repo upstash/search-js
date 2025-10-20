@@ -167,3 +167,11 @@ to any truthy value.
 ```sh
 UPSTASH_DISABLE_TELEMETRY=1
 ```
+
+Alternatively, you can disable telemetry programmatically:
+
+```ts
+const index = client.index("movies", {
+  enableTelemetry: false,
+});
+```
