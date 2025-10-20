@@ -151,3 +151,19 @@ await index.reset();
 const info = await search.info();
 console.log(info);
 ```
+
+## Telemetry
+
+This sdk sends anonymous telemetry data to help us improve your experience.
+We collect the following:
+
+- SDK version
+- Platform (Cloudflare, AWS or Vercel)
+- Runtime version (node@18.x)
+
+You can opt out by setting the `UPSTASH_DISABLE_TELEMETRY` environment variable
+to any truthy value.
+
+```sh
+UPSTASH_DISABLE_TELEMETRY=1
+```
