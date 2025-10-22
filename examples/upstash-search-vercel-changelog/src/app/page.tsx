@@ -103,7 +103,9 @@ export default function Home() {
           <Text className="text-gray-600 text-lg">
             Search through Vercel&apos;s changelog and blog entries (parsed from: <a href="https://vercel.com/atom" target="_blank" rel="noopener noreferrer">
               https://vercel.com/atom
-            </a>)
+            </a>). Source code and quickstart available on <a href="https://github.com/upstash/search-js/tree/main/examples/upstash-search-vercel-changelog" target="_blank" rel="noopener noreferrer">
+              @upstash/search Repository.
+            </a>
           </Text>
         </div>
       </div>
