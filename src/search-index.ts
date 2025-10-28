@@ -70,7 +70,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *   For instance, 0.2 applies 20% semantic matching with 80% full-text matching.
    *   You can learn more about how Upstash Search works from [our docs](https://upstash.com/docs/search/features/algorithm).
    * @param inputEnrichment - Optional boolean to enhance queries before searching (enabled by default).
-   * @param keepOriginalQueryAfterEnrichment - Optional boolean to keep the original query alongside the enriched one (False by default).
+   * @param keepOriginalQueryAfterEnrichment - Optional boolean to keep the original query alongside the enriched one (false by default).
    * @returns Promise that resolves to an array of documents matching the
    */
   search = async (params: {
