@@ -70,6 +70,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *   For instance, 0.2 applies 20% semantic matching with 80% full-text matching.
    *   You can learn more about how Upstash Search works from [our docs](https://upstash.com/docs/search/features/algorithm).
    * @param inputEnrichment - Optional boolean to enhance queries before searching (enabled by default).
+   * @param keepOriginalQueryAfterEnrichment - Optional boolean to keep the original query alongside the enriched one (False by default).
    * @returns Promise that resolves to an array of documents matching the
    */
   search = async (params: {
@@ -79,8 +80,9 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     reranking?: boolean;
     semanticWeight?: number;
     inputEnrichment?: boolean;
+    keepOriginalQueryAfterEnrichment?: boolean;
   }): Promise<SearchResult<TContent, TIndexMetadata>> => {
-    const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment } = params;
+    const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment, keepOriginalQueryAfterEnrichment } = params;
 
     if (semanticWeight && (semanticWeight < 0 || semanticWeight > 1)) {
       throw new UpstashError("semanticWeight must be between 0 and 1");
@@ -101,6 +103,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
         reranking,
         semanticWeight,
         inputEnrichment,
+        _appendOriginalInputToEnrichmentResult: keepOriginalQueryAfterEnrichment,
       },
     })) as { result: SearchResult<TContent, TIndexMetadata> };
 

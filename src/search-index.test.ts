@@ -52,6 +52,7 @@ describe("SearchIndex", () => {
       query: "test-data-1",
       limit: 2,
       filter: "text GLOB 'test*'",
+      keepOriginalQueryAfterEnrichment: true
     });
 
     expect(results).toEqual([
