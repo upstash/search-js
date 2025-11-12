@@ -12,15 +12,17 @@ export type Document<
   TContent extends Dict,
   TMetadata extends Dict,
   TWithScore extends boolean = false,
+  TWithInputEnrichment extends boolean = false
 > = {
   id: string;
   content: TContent;
   metadata?: TMetadata;
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-} & (TWithScore extends true ? { score: number } : {});
+} & (TWithScore extends true ? { score: number } : {}) & (TWithInputEnrichment extends true ? { enrichedInput?: string } : {});
 
-export type SearchResult<TContent extends Dict, TMetadata extends Dict> = Document<
+export type SearchResult<TContent extends Dict, TMetadata extends Dict, TWithInputEnrichment extends boolean = false> = Document<
   TContent,
   TMetadata,
-  true
+  true,
+  TWithInputEnrichment
 >[];

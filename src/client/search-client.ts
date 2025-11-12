@@ -85,7 +85,7 @@ export class HttpClient implements Requester {
           };
   }
 
-  public async request<TResult>(req: UpstashRequest): Promise<UpstashResponse<TResult>> {
+  public async request<TResult>(req: UpstashRequest): Promise<UpstashResponse<TResult> & { enrichedInput?: string }> {
     const requestOptions = {
       cache: this.options.cache,
       method: "POST",
@@ -116,6 +116,11 @@ export class HttpClient implements Requester {
       throw new UpstashError(`${body.error}`);
     }
 
-    return { result: body.result, error: body.error };
+    let enrichedInput = res.headers.get("Upstash-Vector-Enriched-Input") ?? undefined;
+    if (enrichedInput) {
+      enrichedInput = decodeURIComponent(enrichedInput.replaceAll('+', ' '));
+    }
+
+    return { result: body.result, error: body.error, enrichedInput };
   }
 }

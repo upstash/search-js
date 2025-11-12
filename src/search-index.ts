@@ -71,9 +71,10 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *   You can learn more about how Upstash Search works from [our docs](https://upstash.com/docs/search/features/algorithm).
    * @param inputEnrichment - Optional boolean to enhance queries before searching (enabled by default).
    * @param keepOriginalQueryAfterEnrichment - Optional boolean to keep the original query alongside the enriched one (false by default).
+   * @param inputEnrichmentMaxOutputTokens - Optional maximum number of tokens to generate in input enrichment
    * @returns Promise that resolves to an array of documents matching the
    */
-  search = async (params: {
+  search = async <TInputEnrichmentMaxOutputTokens extends number | undefined>(params: {
     query: string;
     limit?: number;
     filter?: string | TreeNode<TContent>;
@@ -81,7 +82,8 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     semanticWeight?: number;
     inputEnrichment?: boolean;
     keepOriginalQueryAfterEnrichment?: boolean;
-  }): Promise<SearchResult<TContent, TIndexMetadata>> => {
+    inputEnrichmentMaxOutputTokens?: TInputEnrichmentMaxOutputTokens;
+  }): Promise<SearchResult<TContent, TIndexMetadata, TInputEnrichmentMaxOutputTokens extends number ? true : false>> => {
     const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment, keepOriginalQueryAfterEnrichment } = params;
 
     if (semanticWeight && (semanticWeight < 0 || semanticWeight > 1)) {
@@ -89,7 +91,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     }
 
     const path = ["search", this.indexName];
-    const { result } = (await this.httpClient.request({
+    const { result, enrichedInput } = (await this.httpClient.request({
       path,
       body: {
         query,
@@ -104,14 +106,17 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
         semanticWeight,
         inputEnrichment,
         _appendOriginalInputToEnrichmentResult: keepOriginalQueryAfterEnrichment,
+        _generationConfig: { maxOutputTokens: params.inputEnrichmentMaxOutputTokens },
+        _returnEnrichedInput: params.inputEnrichmentMaxOutputTokens !== undefined,
       },
-    })) as { result: SearchResult<TContent, TIndexMetadata> };
+    })) as { result: SearchResult<TContent, TIndexMetadata>, enrichedInput?: string };
 
     return result.map(({ id, content, metadata, score }) => ({
       id,
       content,
       metadata,
       score,
+      enrichedInput
     }));
   };
 
