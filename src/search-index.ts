@@ -82,7 +82,15 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     inputEnrichment?: boolean;
     keepOriginalQueryAfterEnrichment?: boolean;
   }): Promise<SearchResult<TContent, TIndexMetadata>> => {
-    const { query, limit = 5, filter, reranking, semanticWeight, inputEnrichment, keepOriginalQueryAfterEnrichment } = params;
+    const {
+      query,
+      limit = 5,
+      filter,
+      reranking,
+      semanticWeight,
+      inputEnrichment,
+      keepOriginalQueryAfterEnrichment,
+    } = params;
 
     if (semanticWeight && (semanticWeight < 0 || semanticWeight > 1)) {
       throw new UpstashError("semanticWeight must be between 0 and 1");

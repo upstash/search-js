@@ -75,7 +75,9 @@ const valueFormatter = (value: string | boolean | number | any[]): string | numb
 };
 
 // Recursive function to construct filter string from FilterTree
-export function constructFilterString<TContent, TMetadata>(filterTree: TreeNode<TContent, TMetadata>): string {
+export function constructFilterString<TContent, TMetadata>(
+  filterTree: TreeNode<TContent, TMetadata>
+): string {
   if ("OR" in filterTree) {
     return `(${filterTree.OR.map((node: TreeNode<TContent, TMetadata>) => constructFilterString(node)).join(" OR ")})`;
   }
