@@ -46,20 +46,25 @@ type ValidOperations<T> = T extends number
         ? MutuallyExclusives<ArrayOperation, any>
         : never;
 
+// Merge TContent and TMetadata, prefixing metadata keys with @metadata.
+type MergedFields<TContent, TMetadata> = TContent & {
+  [K in keyof TMetadata as `@metadata.${string & K}`]: TMetadata[K];
+};
+
 // Type definitions for FilterTree with strict operations
 // A leaf must have exactly one field with exactly one operation
-type Leaf<TContent> = {
-  [Field in keyof TContent]: {
-    [K in Field]: ValidOperations<TContent[K]>;
+type Leaf<TFields> = {
+  [Field in keyof TFields]: {
+    [K in Field]: ValidOperations<TFields[K]>;
   } & {
-    [K in Exclude<keyof TContent, Field>]?: never;
+    [K in Exclude<keyof TFields, Field>]?: never;
   };
-}[keyof TContent];
+}[keyof TFields];
 
-export type TreeNode<TContent> =
-  | Leaf<TContent>
-  | { OR: TreeNode<TContent>[] }
-  | { AND: TreeNode<TContent>[] };
+export type TreeNode<TContent, TMetadata> =
+  | Leaf<MergedFields<TContent, TMetadata>>
+  | { OR: TreeNode<TContent, TMetadata>[] }
+  | { AND: TreeNode<TContent, TMetadata>[] };
 
 const valueFormatter = (value: string | boolean | number | any[]): string | number | boolean => {
   return Array.isArray(value)
@@ -70,16 +75,16 @@ const valueFormatter = (value: string | boolean | number | any[]): string | numb
 };
 
 // Recursive function to construct filter string from FilterTree
-export function constructFilterString<TContent>(filterTree: TreeNode<TContent>): string {
+export function constructFilterString<TContent, TMetadata>(filterTree: TreeNode<TContent, TMetadata>): string {
   if ("OR" in filterTree) {
-    return `(${filterTree.OR.map((node: TreeNode<TContent>) => constructFilterString(node)).join(" OR ")})`;
+    return `(${filterTree.OR.map((node: TreeNode<TContent, TMetadata>) => constructFilterString(node)).join(" OR ")})`;
   }
   if ("AND" in filterTree) {
-    return `(${filterTree.AND.map((node: TreeNode<TContent>) => constructFilterString(node)).join(" AND ")})`;
+    return `(${filterTree.AND.map((node: TreeNode<TContent, TMetadata>) => constructFilterString(node)).join(" AND ")})`;
   }
 
-  const field = Object.keys(filterTree)[0] as keyof TContent;
-  const operationObj = (filterTree as Leaf<TContent>)[field];
+  const field = Object.keys(filterTree)[0];
+  const operationObj = (filterTree as Record<string, any>)[field];
   const operation = Object.keys(operationObj)[0];
   const value = operationObj[operation as keyof typeof operationObj];
 

@@ -76,7 +76,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
   search = async (params: {
     query: string;
     limit?: number;
-    filter?: string | TreeNode<TContent>;
+    filter?: string | TreeNode<TContent, TIndexMetadata>;
     reranking?: boolean;
     semanticWeight?: number;
     inputEnrichment?: boolean;

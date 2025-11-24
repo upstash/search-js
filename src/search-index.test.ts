@@ -3,7 +3,7 @@ import { Search } from "./platforms/nodejs";
 
 const client = Search.fromEnv();
 const indexName = "test-index-name";
-const searchIndex = client.index<{ text: string }, { key: string }>(indexName);
+const searchIndex = client.index<{ text: string }, { key: string; count: number }>(indexName);
 
 describe("SearchIndex", () => {
   beforeEach(async () => {
@@ -12,12 +12,12 @@ describe("SearchIndex", () => {
 
     // Insert test data
     await searchIndex.upsert([
-      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
-      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1", count: 1 } },
+      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2", count: 2 } },
       {
         id: "different-id3",
         content: { text: "different-test-data-3" },
-        metadata: { key: "value3" },
+        metadata: { key: "value3", count: 3 },
       },
     ]);
 
@@ -42,8 +42,8 @@ describe("SearchIndex", () => {
     const results = await searchIndex.fetch({ ids: ["id1", "id2"] });
 
     expect(results).toEqual([
-      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
-      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1", count: 1 } },
+      { id: "id2", content: { text: "test-data-2" }, metadata: { key: "value2", count: 2 } },
     ]);
   });
 
@@ -52,14 +52,14 @@ describe("SearchIndex", () => {
       query: "test-data-1",
       limit: 2,
       filter: "text GLOB 'test*'",
-      keepOriginalQueryAfterEnrichment: true
+      keepOriginalQueryAfterEnrichment: true,
     });
 
     expect(results).toEqual([
       {
         id: "id1",
         content: { text: "test-data-1" },
-        metadata: { key: "value1" },
+        metadata: { key: "value1", count: 1 },
         score: expect.any(Number),
       },
 
@@ -67,6 +67,7 @@ describe("SearchIndex", () => {
         content: { text: "test-data-2" },
         metadata: {
           key: "value2",
+          count: 2,
         },
         id: "id2",
         score: expect.any(Number),
@@ -87,7 +88,28 @@ describe("SearchIndex", () => {
       {
         id: "id1",
         content: { text: "test-data-1" },
-        metadata: { key: "value1" },
+        metadata: { key: "value1", count: 1 },
+        score: expect.any(Number),
+      },
+    ]);
+  });
+
+  test("should search with a metadata filter", async () => {
+    const results = await searchIndex.search({
+      query: "test-data",
+      limit: 2,
+      filter: {
+        AND: [{ text: { glob: "*test-data*" } }, { "@metadata.count": { greaterThanOrEquals: 3 } }],
+      },
+      semanticWeight: 0.5,
+      inputEnrichment: false,
+    });
+
+    expect(results).toEqual([
+      {
+        id: "different-id3",
+        content: { text: "different-test-data-3" },
+        metadata: { key: "value3", count: 3 },
         score: expect.any(Number),
       },
     ]);
@@ -125,7 +147,7 @@ describe("SearchIndex", () => {
     });
 
     expect(documents).toEqual([
-      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1" } },
+      { id: "id1", content: { text: "test-data-1" }, metadata: { key: "value1", count: 1 } },
     ]);
 
     const { documents: nextDocuments } = await searchIndex.range({
@@ -139,6 +161,7 @@ describe("SearchIndex", () => {
         content: { text: "test-data-2" },
         metadata: {
           key: "value2",
+          count: 2,
         },
         id: "id2",
       },
