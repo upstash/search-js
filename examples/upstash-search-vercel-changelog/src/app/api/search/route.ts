@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
     const tokens = (query as string).split(/\s+/);
 
     const mustFilter = [
-      ...(dateFrom ? [{ updated: { $gte: dateFrom as string } }] : []),
-      ...(dateUntil ? [{ updated: { $lte: dateUntil as string } }] : []),
+      ...(fromInt ? [{ dateInt: { $gte: fromInt } }] : []),
+      ...(untilInt ? [{ dateInt: { $lte: untilInt } }] : []),
       ...(contentType && contentType !== "all"
         ? [{ kind: { $eq: contentType } }]
         : []),
