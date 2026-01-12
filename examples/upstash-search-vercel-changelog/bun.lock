@@ -7,7 +7,6 @@
         "@ant-design/icons": "^6.0.1",
         "@ant-design/nextjs-registry": "^1.1.0",
         "@upstash/redis": "1.36.0-rc.7",
-        "@upstash/search": "^0.1.5",
         "antd": "^5.27.3",
         "dayjs": "^1.11.18",
         "next": "15.5.9",
@@ -303,10 +302,6 @@
     "@unrs/resolver-binding-win32-x64-msvc": ["@unrs/resolver-binding-win32-x64-msvc@1.11.1", "", { "os": "win32", "cpu": "x64" }, "sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g=="],
 
     "@upstash/redis": ["@upstash/redis@1.36.0-rc.7", "", { "dependencies": { "uncrypto": "^0.1.3" } }, "sha512-GEnP6Xz36I05Mh0l+oc54abya58nS4EsEn1uFZmCb6BCz3uMJdRQKRUr4j1TokFaQpfZxy8xLTmdfUvbRjzaQA=="],
-
-    "@upstash/search": ["@upstash/search@0.1.5", "", { "dependencies": { "@upstash/vector": "^1.2.1" } }, "sha512-+vkNsxC6jRP1m1HZdnJx7MD8KqvKHlqZjZ+eJMhgnTNXIYoqeY63WBorHY8M3nN7Buhns+eRl1YUTRwnZuiwgQ=="],
-
-    "@upstash/vector": ["@upstash/vector@1.2.2", "", {}, "sha512-ptQ9xnxtKqmpNK52PCcHCszlPOLxIBfjsv7ty8RoF95pkjctS9rSjTQ3Pl9bx5VFbpDj+0dMXw88WLt6swDkgQ=="],
 
     "acorn": ["acorn@8.15.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="],
 
