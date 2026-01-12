@@ -7,6 +7,7 @@ export type VercelContent = {
 }
 
 export type VercelMetadata = {
+  dateInt: number,
   url: string,
   updated: string,
   kind: "blog" | "changelog"

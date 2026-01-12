@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
+import { dateToInt } from "@/lib/dateUtils";
 import { SearchAPIResponse } from "@/lib/types";
 import { INDEX_NAME, SCHEMA } from "@/lib/constants";
 
@@ -20,6 +21,9 @@ export async function POST(request: NextRequest) {
     if (!query) {
       return Response.json({ error: "Query is required" }, { status: 400 });
     }
+
+    const fromInt = dateFrom ? dateToInt(new Date(dateFrom)) : undefined;
+    const untilInt = dateUntil ? dateToInt(new Date(dateUntil)) : undefined;
 
     const tokens = (query as string).split(/\s+/);
 
@@ -43,11 +47,13 @@ export async function POST(request: NextRequest) {
         { title: { $phrase: { value: query, slop: 3 }, $boost: 10 } },
       ] : [])
     ]
-    
+
     const filter = {
       $must: mustFilter.length ? mustFilter : undefined,
       $should: shouldFilter,
     }
+    
+    console.log(JSON.stringify(filter, null, 2));
 
     const searchResults = await index.query({
       // @ts-expect-error – typing issue with Upstash SDK
@@ -66,6 +72,7 @@ export async function POST(request: NextRequest) {
           authors: result.data.authors
         },
         metadata: {
+          dateInt: result.data.dateInt,
           url: result.data.url,
           updated: result.data.updated,
           kind: result.data.kind as "blog" | "changelog",

@@ -255,8 +255,8 @@ export default function Home() {
                                 : "Changelog"}
                             </Tag>
                           </div>
-                          <Text className="text-gray-500 text-sm mr-2">
-                            {dayjs(item.content?.metadata?.updated).format("DD.MM.YYYY")}
+                          <Text className="text-gray-500 text-sm">
+                            {item.content?.metadata?.dateInt && formatDate(item.content.metadata.dateInt)}
                           </Text>
                         </Space>
                       </Col>
