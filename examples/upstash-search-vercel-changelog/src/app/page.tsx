@@ -98,7 +98,7 @@ export default function Home() {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <Title level={1} className="!mb-2 !text-3xl !font-bold">
-            Vercel & Upstash Search Demo
+            Vercel & Upstash Redis Search Demo
           </Title>
           <Text className="text-gray-600 text-lg">
             Search through Vercel&apos;s changelog and blog entries (parsed from: <a href="https://vercel.com/atom" target="_blank" rel="noopener noreferrer">

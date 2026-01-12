@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vercel & Upstash Search",
+  title: "Vercel & Upstash Redis Search",
   description: "Search through Vercel's changelog and blog entries",
 };
 
