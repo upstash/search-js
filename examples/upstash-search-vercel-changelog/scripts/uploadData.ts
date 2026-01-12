@@ -49,13 +49,10 @@ for (let i = 0; i < formatedEntries.length; i += BATCH_SIZE) {
   const batch = formatedEntries.slice(i, i + BATCH_SIZE);
   console.log(`Upserting entries ${i} to ${i + batch.length}...`);
 
-  for (const entry of batch) {
-    const key = `${INDEX_NAME}:${entry.id}`;
-    await redis.hset(key, {
-      ...entry.content,
-      ...entry.metadata,
-    });
-  }
+  await Promise.all(batch.map(entry => redis.hset(`${INDEX_NAME}:${entry.id}`, {
+    ...entry.content,
+    ...entry.metadata,
+  })))
 }
 
 console.log("All entries upserted. Waiting for indexing...");
