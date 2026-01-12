@@ -45,11 +45,12 @@ export async function POST(request: NextRequest) {
     ]
     
     const filter = {
-      $must: mustFilter,
+      $must: mustFilter.length ? mustFilter : undefined,
       $should: shouldFilter,
     }
 
     const searchResults = await index.query({
+      // @ts-expect-error – typing issue with Upstash SDK
       filter,
       limit: 20,
     });
