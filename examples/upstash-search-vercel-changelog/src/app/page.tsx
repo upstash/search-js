@@ -17,8 +17,8 @@ import {
   Select,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import dayjs, { Dayjs } from "dayjs";
-import { intToDate } from "@/lib/dateUtils";
+import { Dayjs } from "dayjs";
+import { dateToInt, toDateString } from "@/lib/dateUtils";
 import { SearchAPIResponse } from "@/lib/types";
 
 const { Title, Text, Link } = Typography;
@@ -45,8 +45,8 @@ export default function Home() {
     try {
       const payload: {
         query: string;
-        dateFrom?: string;
-        dateUntil?: string;
+        dateFrom?: number;
+        dateUntil?: number;
         contentType?: string;
       } = {
         query: searchQuery,
@@ -54,10 +54,10 @@ export default function Home() {
 
       if (dateRange) {
         if (dateRange[0]) {
-          payload.dateFrom = dateRange[0].toISOString();
+          payload.dateFrom = dateToInt(dateRange[0].toDate());
         }
         if (dateRange[1]) {
-          payload.dateUntil = dateRange[1].toISOString();
+          payload.dateUntil = dateToInt(dateRange[1].toDate());
         }
       }
 
@@ -85,11 +85,6 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDate = (dateInt: number) => {
-    const date = intToDate(dateInt);
-    return dayjs(date).format("MMM DD, YYYY");
   };
 
   return (
@@ -191,14 +186,14 @@ export default function Home() {
                     {" "}
                     {searchResponse.filters.dateFrom && searchResponse.filters.dateUntil ? (
                       <>
-                        from {dayjs(searchResponse.filters.dateFrom).format("MMM DD, YYYY")} to{" "}
-                        {dayjs(searchResponse.filters.dateUntil).format("MMM DD, YYYY")}
+                        from {toDateString({ dateInt: searchResponse.filters.dateFrom })} to{" "}
+                        {toDateString({ dateInt: searchResponse.filters.dateUntil })}
                       </>
                     ) : searchResponse.filters.dateFrom ? (
-                      <>on {dayjs(searchResponse.filters.dateFrom).format("MMM DD, YYYY")}</>
-                    ) : (
-                      <>until {dayjs(searchResponse.filters.dateUntil).format("MMM DD, YYYY")}</>
-                    )}
+                      <>from {toDateString({ dateInt: searchResponse.filters.dateFrom })}</>
+                    ) : searchResponse.filters.dateUntil ? (
+                      <>until {toDateString({ dateInt: searchResponse.filters.dateUntil })}</>
+                    ) : null}
                   </>
                 )}
                 {searchResponse.filters.contentType && searchResponse.filters.contentType !== "all" && (
@@ -253,8 +248,8 @@ export default function Home() {
                                 : "Changelog"}
                             </Tag>
                           </div>
-                          <Text className="text-gray-500 text-sm">
-                            {item.content?.metadata?.dateInt && formatDate(item.content.metadata.dateInt)}
+                          <Text className="text-gray-500 text-sm mr-2">
+                            {item.content?.metadata?.dateInt && toDateString({ dateInt: item.content.metadata.dateInt })}
                           </Text>
                         </Space>
                       </Col>

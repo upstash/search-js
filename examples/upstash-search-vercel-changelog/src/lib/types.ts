@@ -24,8 +24,8 @@ export type SearchAPIResponse = {
   }[];
   query: string;
   filters: {
-    dateFrom?: string;
-    dateUntil?: string;
+    dateFrom?: number;
+    dateUntil?: number;
     contentType?: string;
   };
 }

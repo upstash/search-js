@@ -1,3 +1,5 @@
+import { dateToInt } from "./dateUtils";
+
 type FieldBoostAmount = Record<string, number>;
 
 export const fieldBoostAmount: FieldBoostAmount = {
@@ -29,15 +31,15 @@ function buildFieldFilters(fieldName: string, query: string, tokens: string[]) {
 
 export function buildSearchFilter(
   query: string,
-  dateFrom?: string,
-  dateUntil?: string,
+  dateFrom?: number,
+  dateUntil?: number,
   contentType?: string
 ) {
   const tokens = query.split(/\s+/);
 
   const mustFilter = [
-    ...(dateFrom ? [{ dateInt: { $gte: new Date(dateFrom).getTime() } }] : []),
-    ...(dateUntil ? [{ dateInt: { $lte: new Date(dateUntil).getTime() } }] : []),
+    ...(dateFrom ? [{ dateInt: { $gte: dateFrom } }] : []),
+    ...(dateUntil ? [{ dateInt: { $lte: dateUntil } }] : []),
     ...(contentType && contentType !== "all"
       ? [{ kind: { $eq: contentType } }]
       : []),

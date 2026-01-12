@@ -16,7 +16,12 @@ const index = redis.search.index(INDEX_NAME, SCHEMA);
 
 export async function POST(request: NextRequest) {
   try {
-    const { query, dateFrom, dateUntil, contentType } = await request.json();
+    const { query, dateFrom, dateUntil, contentType } = await request.json() as {
+      query: string;
+      dateFrom?: number;
+      dateUntil?: number;
+      contentType?: string;
+    };
 
     if (!query) {
       return Response.json({ error: "Query is required" }, { status: 400 });
