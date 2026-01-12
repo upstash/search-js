@@ -1,16 +1,13 @@
 import { s } from "@upstash/redis";
 
-export const INDEX_NAME = "vercel-changelog";
+export const INDEX_NAME = "vercel-changelog-2";
+export const INDEX_PREFIX = "vercel-changelog-2";
 export const SCHEMA = s.object({
-  content: s.object({
-    title: s.string(),
-    content: s.string(),
-    authors: s.string(),
-  }),
-  metadata: s.object({
-    dateInt: s.number("U64"),
-    url: s.string(),
-    updated: s.string(),
-    kind: s.string().noTokenize(),
-  }),
+  title: s.string().noStem(),
+  content: s.string(),
+  authors: s.string().noStem(),
+  dateInt: s.date(),
+  updated: s.date(),
+  url: s.string().noTokenize(),
+  kind: s.string().noTokenize(),
 });

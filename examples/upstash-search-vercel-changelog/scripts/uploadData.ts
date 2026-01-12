@@ -2,7 +2,7 @@ import { Redis } from "@upstash/redis";
 import { getEntries } from './parser';
 import { dateToInt } from '@/lib/dateUtils';
 import { VercelContent, VercelMetadata } from '@/lib/types';
-import { INDEX_NAME, SCHEMA } from '@/lib/constants';
+import { INDEX_NAME, INDEX_PREFIX, SCHEMA } from '@/lib/constants';
 
 const entries = await getEntries()
 
@@ -36,8 +36,8 @@ const redis = new Redis({
 const index = await redis.search.createIndex({
   name: INDEX_NAME,
   schema: SCHEMA,
-  dataType: "string",
-  prefix: `${INDEX_NAME}:`,
+  dataType: "hash",
+  prefix: `${INDEX_PREFIX}:`,
 });
 
 console.log(`Created search index: ${INDEX_NAME}`);
@@ -51,9 +51,9 @@ for (let i = 0; i < formatedEntries.length; i += BATCH_SIZE) {
 
   for (const entry of batch) {
     const key = `${INDEX_NAME}:${entry.id}`;
-    await redis.set(key, {
-      content: entry.content,
-      metadata: entry.metadata,
+    await redis.hset(key, {
+      ...entry.content,
+      ...entry.metadata,
     });
   }
 }

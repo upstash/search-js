@@ -25,34 +25,47 @@ export async function POST(request: NextRequest) {
     const fromInt = dateFrom ? dateToInt(new Date(dateFrom)) : undefined;
     const untilInt = dateUntil ? dateToInt(new Date(dateUntil)) : undefined;
 
-    // Build filter object using the new query API
-    const filterConditions: Record<string, any>[] = [
-      { "content.title": { $eq: query } },
-    ];
+    const tokens = (query as string).split(/\s+/);
 
-    // Add date range filters
-    if (fromInt !== undefined) {
-      filterConditions.push({ "metadata.dateInt": { $gte: fromInt } });
+    const filter = {
+      $should: [
+        ...tokens.flatMap((token) => ([
+          { title: { $eq: token, $boost: 10 } },
+          { title: { $fuzzy: { value: token, distance: 2, transpositionCostOne: true }, $boost: 5 } },
+          { title: { $fuzzy: { value: token, distance: 1 }, $boost: 1 } },
+          { title: { $regex: `${token}.*`, $boost: 5 } },
+        ])),
+        ...(tokens.length > 1 ? [
+          { title: { $phrase: query, $boost: 20 } },
+          { title: { $phrase: { value: query, slop: 3 }, $boost: 10 } },
+        ] : [])
+      ]
     }
-    if (untilInt !== undefined) {
-      filterConditions.push({ "metadata.dateInt": { $lte: untilInt } });
-    }
+    
+    console.log(JSON.stringify(filter, null, 2));
 
-    // Add content type filter
-    if (contentType && contentType !== "all") {
-      filterConditions.push({ "metadata.kind": { $eq: contentType } });
-    }
-
-  const searchResults = await index.query({
-    filter: filterConditions.length > 1 ? { $and: filterConditions } : filterConditions[0],
-    limit: 20,
-  });
+    const searchResults = await index.query({
+      filter,
+      limit: 20,
+    });
 
     // Map results to match expected format
     const mappedResults = searchResults.map((result) => ({
       id: result.key,
       key: result.key,
-      content: result.data as any,
+      content: {
+        content: {
+          title: result.data.title,
+          content: result.data.content,
+          authors: result.data.authors
+        },
+        metadata: {
+          dateInt: result.data.dateInt,
+          url: result.data.url,
+          updated: result.data.updated,
+          kind: result.data.kind as "blog" | "changelog",
+        }
+      },
     }));
 
     return Response.json({
