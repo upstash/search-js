@@ -15,10 +15,12 @@ export type VercelMetadata = {
 
 export type SearchAPIResponse = {
   results: {
-    content: VercelContent;
-    metadata?: VercelMetadata;
-    score: number;
     id: string;
+    key: string;
+    content?: {
+      content: VercelContent;
+      metadata?: VercelMetadata;
+    };
   }[];
   query: string;
   filters: {

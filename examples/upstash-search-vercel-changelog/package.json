@@ -12,7 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.0.1",
     "@ant-design/nextjs-registry": "^1.1.0",
-    "@upstash/search": "^0.1.5",
+    "@upstash/redis": "1.36.0-rc.7",
     "antd": "^5.27.3",
     "dayjs": "^1.11.18",
     "next": "15.5.9",

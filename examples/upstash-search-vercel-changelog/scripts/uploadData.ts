@@ -1,8 +1,8 @@
-import { Search } from "@upstash/search";
+import { Redis } from "@upstash/redis";
 import { getEntries } from './parser';
 import { dateToInt } from '@/lib/dateUtils';
 import { VercelContent, VercelMetadata } from '@/lib/types';
-import { NAMESPACE } from '@/lib/constants';
+import { INDEX_NAME, SCHEMA } from '@/lib/constants';
 
 const entries = await getEntries()
 
@@ -27,12 +27,20 @@ const formatedEntries = entries.map((entry, index) => {
   }
 })
 
-const client = new Search({
-  url: process.env.UPSTASH_SEARCH_REST_URL!,
-  token: process.env.UPSTASH_SEARCH_REST_TOKEN!,
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const index = client.index<VercelContent, VercelMetadata>(NAMESPACE);
+// Create the index (will be used for upserting data)
+const index = await redis.search.createIndex({
+  name: INDEX_NAME,
+  schema: SCHEMA,
+  dataType: "string",
+  prefix: `${INDEX_NAME}:`,
+});
+
+console.log(`Created search index: ${INDEX_NAME}`);
 
 // upsert 100 entries at a time
 const BATCH_SIZE = 100;
@@ -41,7 +49,15 @@ for (let i = 0; i < formatedEntries.length; i += BATCH_SIZE) {
   const batch = formatedEntries.slice(i, i + BATCH_SIZE);
   console.log(`Upserting entries ${i} to ${i + batch.length}...`);
 
-  await index.upsert(batch);
+  for (const entry of batch) {
+    const key = `${INDEX_NAME}:${entry.id}`;
+    await redis.set(key, {
+      content: entry.content,
+      metadata: entry.metadata,
+    });
+  }
 }
 
-console.log("All entries upserted.");
+console.log("All entries upserted. Waiting for indexing...");
+await index.waitIndexing();
+console.log("Indexing complete!");

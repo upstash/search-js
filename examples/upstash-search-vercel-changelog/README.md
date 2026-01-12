@@ -2,14 +2,13 @@
 
 # Vercel Changelog Search
 
-A Next.js application that provides search functionality for Vercel's changelog using Upstash Search.
+A Next.js application that provides search functionality for Vercel's changelog using Upstash Redis Search.
 
 ## Features
 
-- **Full-text & Semantic Search**: Search through Vercel changelog entries with full text and semantic search capabilities
-- **Input Enrichment & Reranking**: Enriches search queries and reranks search results
+- **Full-text Search**: Search through Vercel changelog entries with powerful full-text search capabilities
 - **Date & Content Type Filtering**: Filter results by date range (From/Until dates) and content type (Blog/Changelog)
-- **Search Scoring**: Display relevance scores for search results
+- **Schema-based Indexing**: Type-safe search using schema definitions
 
 ## Setup
 
@@ -24,25 +23,31 @@ bun install
 > [!TIP]
 > If you created the project with the `Deploy with Vercel` button, you can skip this section.
 
-Copy the example environment file and configure your Upstash Search credentials:
+Copy the example environment file and configure your Upstash Redis credentials:
 
 ```bash
 cp .env.example .env.local
 ```
 
-To create an Upstash Search database:
+To set up Upstash Redis with Search:
 
 1. Go to [Upstash Console](https://console.upstash.com/)
-2. Create a new Search index named `vercel-changelog`
-3. Copy the REST URL and Token to your `.env.local` file
+2. Create a new Redis database
+3. Copy the REST URL and Token to your `.env.local` file as:
+   - `UPSTASH_REDIS_REST_URL`
+   - `UPSTASH_REDIS_REST_TOKEN`
 
 ### 3. Load the Database
 
-Upload the data from `https://vercel.com/atom` to Upstash Search:
+Upload the data from `https://vercel.com/atom` to Upstash Redis:
 
 ```bash
 bun upload-data
 ```
+
+This script will:
+- Create a search index named `vercel-changelog`
+- Parse and upload all changelog entries from Vercel's Atom feed
 
 ## Development
 
@@ -58,4 +63,4 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 - **TypeScript** - Type safety
 - **Ant Design** - UI component library
 - **Tailwind CSS** - Utility-first CSS framework
-- **Upstash Search** - Semantic and full-text search
+- **Upstash Redis** - Search with Redis full-text search capabilities

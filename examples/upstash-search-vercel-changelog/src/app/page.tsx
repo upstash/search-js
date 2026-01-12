@@ -103,8 +103,8 @@ export default function Home() {
           <Text className="text-gray-600 text-lg">
             Search through Vercel&apos;s changelog and blog entries (parsed from: <a href="https://vercel.com/atom" target="_blank" rel="noopener noreferrer">
               https://vercel.com/atom
-            </a>). Source code and quickstart available on <a href="https://github.com/upstash/search-js/tree/main/examples/upstash-search-vercel-changelog" target="_blank" rel="noopener noreferrer">
-              @upstash/search Repository.
+            </a>). Source code and quickstart available on <a href="https://github.com/upstash/upstash-redis" target="_blank" rel="noopener noreferrer">
+              @upstash/redis Repository.
             </a>
           </Text>
         </div>
@@ -228,38 +228,35 @@ export default function Home() {
                           className="w-full"
                         >
                           <Link
-                            href={item.metadata?.url}
+                            href={item.content?.metadata?.url}
                             target="_blank"
                             className="!text-lg !font-semibold !text-black hover:!text-blue-600"
                           >
-                            {item.content.title}
+                            {item.content?.content?.title}
                           </Link>
                           <Text className="text-gray-600 text-base leading-relaxed">
-                            {item.content.content}
+                            {item.content?.content?.content}
                           </Text>
                         </Space>
                       </Col>
                       <Col xs={24} sm={6} className="text-right">
                         <Space direction="vertical" size="small" align="end">
                           <div className="flex flex-col gap-1">
-                            <Tag color="blue" className="rounded-full">
-                              Score: {item.score.toFixed(2)}
-                            </Tag>
                             <Tag
                               color={
-                                item.metadata?.kind === "blog"
+                                item.content?.metadata?.kind === "blog"
                                   ? "green"
                                   : "orange"
                               }
                               className="rounded-full"
                             >
-                              {item.metadata?.kind === "blog"
+                              {item.content?.metadata?.kind === "blog"
                                 ? "Blog"
                                 : "Changelog"}
                             </Tag>
                           </div>
                           <Text className="text-gray-500 text-sm">
-                            {formatDate(item.metadata!.dateInt)}
+                            {item.content?.metadata?.dateInt && formatDate(item.content.metadata.dateInt)}
                           </Text>
                         </Space>
                       </Col>
