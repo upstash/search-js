@@ -1,8 +1,8 @@
 import { Redis } from "@upstash/redis";
 import { NextRequest } from "next/server";
-import { dateToInt } from "@/lib/dateUtils";
 import { SearchAPIResponse } from "@/lib/types";
 import { INDEX_NAME, SCHEMA } from "@/lib/constants";
+import { buildSearchFilter } from "@/lib/searchFilters";
 
 // Initialize Redis client
 const redis = new Redis({
@@ -22,41 +22,9 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "Query is required" }, { status: 400 });
     }
 
-    const fromInt = dateFrom ? dateToInt(new Date(dateFrom)) : undefined;
-    const untilInt = dateUntil ? dateToInt(new Date(dateUntil)) : undefined;
-
-    const tokens = (query as string).split(/\s+/);
-
-    const mustFilter = [
-      ...(fromInt ? [{ dateInt: { $gte: fromInt } }] : []),
-      ...(untilInt ? [{ dateInt: { $lte: untilInt } }] : []),
-      ...(contentType && contentType !== "all"
-        ? [{ kind: { $eq: contentType } }]
-        : []),
-    ]
-
-    const shouldFilter = [
-      ...tokens.flatMap((token) => ([
-        { title: { $eq: token, $boost: 10 } },
-        { title: { $fuzzy: { value: token, distance: 2, transpositionCostOne: true }, $boost: 5 } },
-        { title: { $fuzzy: { value: token, distance: 1 }, $boost: 1 } },
-        { title: { $regex: `${token}.*`, $boost: 5 } },
-      ])),
-      ...(tokens.length > 1 ? [
-        { title: { $phrase: query, $boost: 20 } },
-        { title: { $phrase: { value: query, slop: 3 }, $boost: 10 } },
-      ] : [])
-    ]
-
-    const filter = {
-      $must: mustFilter.length ? mustFilter : undefined,
-      $should: shouldFilter,
-    }
-    
-    console.log(JSON.stringify(filter, null, 2));
+    const filter = buildSearchFilter(query, dateFrom, dateUntil, contentType);
 
     const searchResults = await index.query({
-      // @ts-expect-error – typing issue with Upstash SDK
       filter,
       limit: 20,
     });
