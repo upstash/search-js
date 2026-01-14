@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
   try {
     const { query, dateFrom, dateUntil, contentType } = await request.json() as {
       query: string;
-      dateFrom?: number;
-      dateUntil?: number;
+      dateFrom?: string;
+      dateUntil?: string;
       contentType?: string;
     };
 

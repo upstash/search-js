@@ -7,7 +7,6 @@ export type VercelContent = {
 }
 
 export type VercelMetadata = {
-  dateInt: number,
   url: string,
   updated: string,
   kind: "blog" | "changelog"
@@ -24,8 +23,8 @@ export type SearchAPIResponse = {
   }[];
   query: string;
   filters: {
-    dateFrom?: number;
-    dateUntil?: number;
+    dateFrom?: string;
+    dateUntil?: string;
     contentType?: string;
   };
 }

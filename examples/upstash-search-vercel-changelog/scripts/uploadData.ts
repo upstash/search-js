@@ -1,14 +1,11 @@
 import { Redis } from "@upstash/redis";
 import { getEntries } from './parser';
-import { dateToInt } from '@/lib/dateUtils';
 import { VercelContent, VercelMetadata } from '@/lib/types';
 import { INDEX_NAME, INDEX_PREFIX, SCHEMA } from '@/lib/constants';
 
 const entries = await getEntries()
 
 const formatedEntries = entries.map((entry, index) => {
-  const dateObj = new Date(entry.updated);
-  const dateInt = dateToInt(dateObj)
   const kind = entry.link.includes("/blog/") ? "blog" : "changelog";
 
   return {
@@ -19,7 +16,6 @@ const formatedEntries = entries.map((entry, index) => {
       authors: entry.author.join(', ')
     } satisfies VercelContent,
     metadata: {
-      dateInt,
       url: entry.link,
       updated: entry.updated,
       kind

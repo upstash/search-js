@@ -18,8 +18,8 @@ import {
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Dayjs } from "dayjs";
-import { dateToInt, toDateString } from "@/lib/dateUtils";
 import { SearchAPIResponse } from "@/lib/types";
+import { toHumanReadableDate } from "@/lib/dateUtils";
 
 const { Title, Text, Link } = Typography;
 const { RangePicker } = DatePicker;
@@ -45,8 +45,8 @@ export default function Home() {
     try {
       const payload: {
         query: string;
-        dateFrom?: number;
-        dateUntil?: number;
+        dateFrom?: string;
+        dateUntil?: string;
         contentType?: string;
       } = {
         query: searchQuery,
@@ -54,10 +54,10 @@ export default function Home() {
 
       if (dateRange) {
         if (dateRange[0]) {
-          payload.dateFrom = dateToInt(dateRange[0].toDate());
+          payload.dateFrom = dateRange[0].toDate().toISOString();
         }
         if (dateRange[1]) {
-          payload.dateUntil = dateToInt(dateRange[1].toDate());
+          payload.dateUntil = dateRange[1].toDate().toISOString();
         }
       }
 
@@ -186,13 +186,13 @@ export default function Home() {
                     {" "}
                     {searchResponse.filters.dateFrom && searchResponse.filters.dateUntil ? (
                       <>
-                        from {toDateString({ dateInt: searchResponse.filters.dateFrom })} to{" "}
-                        {toDateString({ dateInt: searchResponse.filters.dateUntil })}
+                        from {toHumanReadableDate(searchResponse.filters.dateFrom)} to{" "}
+                        {toHumanReadableDate(searchResponse.filters.dateUntil)}
                       </>
                     ) : searchResponse.filters.dateFrom ? (
-                      <>from {toDateString({ dateInt: searchResponse.filters.dateFrom })}</>
+                      <>from {toHumanReadableDate(searchResponse.filters.dateFrom)}</>
                     ) : searchResponse.filters.dateUntil ? (
-                      <>until {toDateString({ dateInt: searchResponse.filters.dateUntil })}</>
+                      <>until {toHumanReadableDate(searchResponse.filters.dateUntil)}</>
                     ) : null}
                   </>
                 )}
@@ -249,7 +249,7 @@ export default function Home() {
                             </Tag>
                           </div>
                           <Text className="text-gray-500 text-sm mr-2">
-                            {item.content?.metadata?.dateInt && toDateString({ dateInt: item.content.metadata.dateInt })}
+                            {item.content?.metadata?.updated && toHumanReadableDate(item.content.metadata.updated)}
                           </Text>
                         </Space>
                       </Col>
