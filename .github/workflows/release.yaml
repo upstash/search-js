@@ -5,6 +5,10 @@ on:
     types:
       - published
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   release:
     name: Release
@@ -34,9 +38,6 @@ jobs:
 
       - name: Build
         run: bun run build
-
-      - name: Add npm token
-        run: echo "//registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}" > .npmrc
 
       - name: Publish release candidate
         if: "github.event.release.prerelease"
