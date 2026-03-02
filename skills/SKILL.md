@@ -1,5 +1,5 @@
 ---
-name: upstash/search TypeScript SDK
+name: upstash-search-js
 description: Entry point for documentation skills covering Upstash Search quick starts, core concepts, and TypeScript SDK usage. Use when a user asks how to get started, how indexing works, or how to use the TS client.
 ---
 
