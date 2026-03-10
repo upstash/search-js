@@ -13,7 +13,7 @@ import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from
  * @template TContent - Content shape associated with each document.
  * @template TIndexMetadata - Metadata shape associated with each document.
  */
-export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
+export class SearchIndex<TContent = Dict, TIndexMetadata = Dict> {
   /**
    * Initializes a new SearchIndex instance for the specified index.
    *
