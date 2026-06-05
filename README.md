@@ -15,6 +15,11 @@ It is a connectionless (HTTP based) AI Search client and designed for:
 - WebAssembly
 - and other environments where HTTP is preferred over TCP.
 
+> [!WARNING]  
+> This page is about **Upstash Search**, a standalone, fully managed AI search product with built-in semantic search, full-text search, and reranking.
+>
+> It is **not** the same as **Upstash Redis Search** — a search extension built on [Tantivy](https://github.com/quickwit-oss/tantivy), available only on Upstash Redis and separate from the Redis Search API. For that, see the [Upstash Redis Search docs](https://upstash.com/docs/redis/search/introduction).
+
 ## Quick Start
 
 ### Install
