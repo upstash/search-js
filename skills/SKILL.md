@@ -26,6 +26,7 @@ const results = await index.search({ query: "hello" });
 ```
 
 Basic steps:
+
 - Create an index
 - Insert or update documents
 - Run searches or filtered queries
@@ -33,7 +34,9 @@ Basic steps:
 ## Other Skill Files
 
 ### sdk-overview
+
 Provides detailed documentation for all TypeScript SDK commands. Includes:
+
 - delete: Deleting documents
 - fetch: Retrieving a document
 - info: Index info
@@ -44,7 +47,9 @@ Provides detailed documentation for all TypeScript SDK commands. Includes:
 - getting-started: Setup steps for the SDK
 
 ### quick-start
+
 Provides a fast, end-to-end workflow for creating a Search database, adding documents, and querying them. Covers essential concepts including:
+
 - Creating a database and storing credentials
 - Adding documents with content and metadata
 - Understanding content vs metadata (searchability and filterability)
