@@ -28,12 +28,15 @@ export type ClientConfig = {
 
 /**
  * Provides search capabilities over indexes.
+ *
+ * @see node_modules/@upstash/search/docs/getting-started.mdx
  */
 export class Search extends core.Search {
   /**
    * Creates a new Search instance.
    *
    * @param vectorIndex - The underlying index used for search operations.
+   * @see node_modules/@upstash/search/docs/getting-started.mdx
    */
   constructor(params: ClientConfig) {
     const environment =
@@ -95,6 +98,7 @@ export class Search extends core.Search {
    *
    * @param env
    * @returns
+   * @see node_modules/@upstash/search/docs/getting-started.mdx
    */
   static fromEnv = (
     env?: {
