@@ -12,6 +12,7 @@ import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from
  *
  * @template TContent - Content shape associated with each document.
  * @template TIndexMetadata - Metadata shape associated with each document.
+ * @see node_modules/@upstash/search/docs/getting-started.mdx
  */
 export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
   /**
@@ -38,6 +39,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *
    * @param params - A document or array of documents to upsert, including `id`, `content`, and optional `metadata`.
    * @returns A promise resolving to the result of the upsert operation.
+   * @see node_modules/@upstash/search/docs/commands/upsert.mdx
    */
   upsert = async (
     params:
@@ -72,6 +74,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * @param inputEnrichment - Optional boolean to enhance queries before searching (enabled by default).
    * @param keepOriginalQueryAfterEnrichment - Optional boolean to keep the original query alongside the enriched one (false by default).
    * @returns Promise that resolves to an array of documents matching the
+   * @see node_modules/@upstash/search/docs/commands/search.mdx
    */
   search = async (params: {
     query: string;
@@ -128,6 +131,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *
    * @param params - An array of document IDs to retrieve.
    * @returns A promise resolving to an array of documents or `null` if a document is not found.
+   * @see node_modules/@upstash/search/docs/commands/fetch.mdx
    */
   fetch = async (params: Parameters<VectorIndex["fetch"]>[0]) => {
     const result = await this.vectorIndex.fetch(params, {
@@ -152,6 +156,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *
    * @param params - An array of document IDs to delete.
    * @returns A promise resolving to the result of the deletion operation.
+   * @see node_modules/@upstash/search/docs/commands/delete.mdx
    */
   delete = async (params: Parameters<VectorIndex["delete"]>[0]) => {
     return await this.vectorIndex.delete(params, { namespace: this.indexName });
@@ -164,6 +169,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    *
    * @param params - Range parameters including `cursor`, `limit`, and ID `prefix`.
    * @returns A promise resolving to the next cursor and documents in the range.
+   * @see node_modules/@upstash/search/docs/commands/range.mdx
    */
   range = async (params: { cursor: string; limit: number; prefix?: string }) => {
     const { nextCursor, vectors } = await this.vectorIndex.range(
@@ -189,6 +195,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * Useful for resetting the index before or after tests, or when a clean state is needed.
    *
    * @returns A promise resolving to the result of the reset operation.
+   * @see node_modules/@upstash/search/docs/commands/reset.mdx
    */
   reset = async () => {
     return await this.vectorIndex.reset({ namespace: this.indexName });
@@ -211,6 +218,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * Provides document count and pending document count, indicating documents that are awaiting indexing.
    *
    * @returns A promise resolving to index information with document counts.
+   * @see node_modules/@upstash/search/docs/commands/info.mdx
    */
   info = async () => {
     const info = await this.vectorIndex.info();
