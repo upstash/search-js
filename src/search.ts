@@ -26,6 +26,7 @@ export class Search {
    *
    * @param indexName - The name to use as an index.
    * @returns A SearchIndex instance for managing documents within the index.
+   * @see node_modules/@upstash/search/docs/getting-started.mdx
    */
   index = <TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict>(
     indexName: string
@@ -49,6 +50,7 @@ export class Search {
    * and details about each available index.
    *
    * @returns An object containing search system metrics and index details.
+   * @see node_modules/@upstash/search/docs/commands/info.mdx
    */
   info = async () => {
     const { indexSize, namespaces, pendingVectorCount, vectorCount } =

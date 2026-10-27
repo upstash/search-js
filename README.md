@@ -20,6 +20,10 @@ It is a connectionless (HTTP based) AI Search client and designed for:
 >
 > It is **not** the same as **Upstash Redis Search** — a search extension built on [Tantivy](https://github.com/quickwit-oss/tantivy), available only on Upstash Redis and separate from the Redis Search API. For that, see the [Upstash Redis Search docs](https://upstash.com/docs/redis/search/introduction).
 
+## Docs
+
+The npm package includes TypeScript source in `node_modules/@upstash/search/src/` and documentation in `node_modules/@upstash/search/docs/`. Start with `src/platforms/nodejs.ts` to explore the source.
+
 ## Quick Start
 
 ### Install
