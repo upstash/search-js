@@ -28,7 +28,7 @@ export class Search {
    * @returns A SearchIndex instance for managing documents within the index.
    * @see node_modules/@upstash/search/docs/getting-started.mdx
    */
-  index = <TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict>(
+  index = <TContent = Dict, TIndexMetadata = Dict>(
     indexName: string
   ): SearchIndex<TContent, TIndexMetadata> => {
     return new SearchIndex<TContent, TIndexMetadata>(this.client, this.vectorIndex, indexName);

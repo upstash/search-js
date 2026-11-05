@@ -14,7 +14,7 @@ import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from
  * @template TIndexMetadata - Metadata shape associated with each document.
  * @see node_modules/@upstash/search/docs/getting-started.mdx
  */
-export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Dict = Dict> {
+export class SearchIndex<TContent = Dict, TIndexMetadata = Dict> {
   /**
    * Initializes a new SearchIndex instance for the specified index.
    *
