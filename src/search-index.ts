@@ -3,6 +3,34 @@ import { constructFilterString, type TreeNode } from "./client/metadata";
 import type { HttpClient } from "./client/search-client";
 import type { Dict, VectorIndex, UpsertParameters, SearchResult, Document } from "./types";
 
+// eslint-disable-next-line no-control-regex
+const CONTROL_CHARACTER = /[\u0000-\u001F\u007F]/;
+
+/**
+ * Returns why a value can't be used as an index name, or undefined if it can.
+ *
+ * `/`, `\`, `%` and control characters are not allowed in index names, and `.` and `..`
+ * can't be represented as a path segment.
+ */
+const indexNameError = (indexName: unknown): string | undefined => {
+  if (typeof indexName !== "string") {
+    return "Index name must be a string.";
+  }
+  if (indexName === "." || indexName === "..") {
+    return 'Index name cannot be "." or "..".';
+  }
+  if (CONTROL_CHARACTER.test(indexName)) {
+    return "Index name cannot contain control characters such as tab or new line.";
+  }
+  if (/[/\\]/.test(indexName)) {
+    return String.raw`Index name cannot contain "/" or "\".`;
+  }
+  if (indexName.includes("%")) {
+    return 'Index name cannot contain "%". Pass the index name as it is, without percent-encoding it.';
+  }
+  return undefined;
+};
+
 /**
  * Represents a search index for managing and querying documents.
  *
@@ -19,8 +47,9 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
    * Initializes a new SearchIndex instance for the specified index.
    *
    * @param vectorIndex - The underlying vector index used for search operations.
-   * @param indexName - The name to use for this index. Must be a non-empty string.
-   * @throws Will throw an error if the indexn name is not provided.
+   * @param indexName - The name to use for this index. Must be a non-empty string. It can't
+   *   contain `/`, `\`, `%` or control characters, and can't be `.` or `..`.
+   * @throws Will throw an error if the index name is not provided or can't be used.
    */
   constructor(
     private httpClient: HttpClient,
@@ -30,7 +59,23 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
     if (!indexName) {
       throw new Error("indexName is required when defining a SearchIndex");
     }
+
+    const name: unknown = indexName;
+    if (typeof name === "number" || typeof name === "bigint") {
+      this.indexName = String(name);
+    }
+
+    const error = indexNameError(this.indexName);
+    if (error !== undefined) {
+      throw new UpstashError(error);
+    }
   }
+
+  /**
+   * Builds the request path of an endpoint for this index. The index name is percent-encoded so
+   * that characters such as `?`, `#` and spaces stay part of the name.
+   */
+  private pathOf = (endpoint: string): string[] => [endpoint, encodeURIComponent(this.indexName)];
 
   /**
    * Inserts or updates documents in the index.
@@ -48,7 +93,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
   ) => {
     const upsertParams = Array.isArray(params) ? params : [params];
 
-    const path = ["upsert-data", this.indexName];
+    const path = this.pathOf("upsert-data");
     const { result } = (await this.httpClient.request({
       path,
       body: upsertParams,
@@ -99,7 +144,7 @@ export class SearchIndex<TContent extends Dict = Dict, TIndexMetadata extends Di
       throw new UpstashError("semanticWeight must be between 0 and 1");
     }
 
-    const path = ["search", this.indexName];
+    const path = this.pathOf("search");
     const { result } = (await this.httpClient.request({
       path,
       body: {

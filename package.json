@@ -69,7 +69,7 @@
     "prepack": "giget gh:upstash/docs/search/sdks/ts docs --force-clean 1>&2"
   },
   "dependencies": {
-    "@upstash/vector": "^1.2.1"
+    "@upstash/vector": "^1.2.6"
   },
   "directories": {
     "doc": "./docs"
