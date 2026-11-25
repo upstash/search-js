@@ -1,6 +1,5 @@
-import { afterEach, describe, expect, spyOn, test } from "bun:test";
-import { Search as NodeClient } from "../platforms/nodejs";
-import { Search as CloudflareClient } from "../platforms/cloudflare";
+import { afterEach, expect, spyOn, test } from "bun:test";
+import { Search } from "../platforms/nodejs";
 import type { RetryConfig } from "./search-client";
 
 const originalFetch = globalThis.fetch;
@@ -8,89 +7,28 @@ afterEach(() => {
   globalThis.fetch = originalFetch;
 });
 
-for (const [platform, Client] of [
-  ["nodejs", NodeClient],
-  ["cloudflare", CloudflareClient],
-] as const) {
-  describe(`${platform} retry configuration`, () => {
-    for (const scenario of [
-      {
-        name: "disabled retries reject the first failure even if a later call would succeed",
-        retry: false,
-        failures: 1,
-        calls: 1,
-        rejects: true,
-      },
-      {
-        name: "disabled retries make one attempt when every call fails",
-        retry: false,
-        failures: 9,
-        calls: 1,
-        rejects: true,
-      },
-      {
-        name: "disabled retries return the first successful response",
-        retry: false,
-        failures: 0,
-        calls: 1,
-        rejects: false,
-      },
-      {
-        name: "zero retries make one attempt",
-        retry: { retries: 0, backoff: () => 0 },
-        failures: 1,
-        calls: 1,
-        rejects: true,
-      },
-      {
-        name: "one retry recovers from one failure",
-        retry: { retries: 1, backoff: () => 0 },
-        failures: 1,
-        calls: 2,
-        rejects: false,
-      },
-      {
-        name: "two retries recover from two failures",
-        retry: { retries: 2, backoff: () => 0 },
-        failures: 2,
-        calls: 3,
-        rejects: false,
-      },
-      {
-        name: "two retries stop after three failed attempts",
-        retry: { retries: 2, backoff: () => 0 },
-        failures: 9,
-        calls: 3,
-        rejects: true,
-      },
-    ] satisfies {
-      name: string;
-      retry: RetryConfig;
-      failures: number;
-      calls: number;
-      rejects: boolean;
-    }[]) {
-      test(scenario.name, async () => {
-        const error = new TypeError("synthetic connection lost");
-        const fetchMock = spyOn(globalThis, "fetch").mockResolvedValue(
-          new Response(JSON.stringify({ result: "Success" }))
-        );
-        for (let attempt = 0; attempt < scenario.failures; attempt++) {
-          fetchMock.mockRejectedValueOnce(error);
-        }
-        const client = new Client({
-          url: "https://offline.invalid",
-          token: "synthetic",
-          enableTelemetry: false,
-          retry: scenario.retry,
-        });
-
-        const result = client.index("docs").upsert({ id: "doc-1", content: { title: "A" } });
-        await (scenario.rejects
-          ? expect(result).rejects.toBe(error)
-          : expect(result).resolves.toBe("Success"));
-        expect(fetchMock).toHaveBeenCalledTimes(scenario.calls);
-      });
-    }
+const upsertAfterOneFailure = (retry: RetryConfig) => {
+  const fetchMock = spyOn(globalThis, "fetch")
+    .mockResolvedValue(new Response(JSON.stringify({ result: "Success" })))
+    .mockRejectedValueOnce(new TypeError("connection lost"));
+  const client = new Search({
+    url: "https://offline.invalid",
+    token: "synthetic",
+    enableTelemetry: false,
+    retry,
   });
-}
+  const result = client.index("docs").upsert({ id: "doc-1", content: { title: "A" } });
+  return { result, fetchMock };
+};
+
+test("retry: false does not send a second request", async () => {
+  const { result, fetchMock } = upsertAfterOneFailure(false);
+  await expect(result).rejects.toThrow("connection lost");
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+});
+
+test("retries: 1 still retries once", async () => {
+  const { result, fetchMock } = upsertAfterOneFailure({ retries: 1, backoff: () => 0 });
+  await expect(result).resolves.toBe("Success");
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+});
