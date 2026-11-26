@@ -12,9 +12,9 @@ You must configure a Search client using either environment variables or a confi
 import { Search } from "@upstash/search";
 
 // Option 1: with explicit config
-const client = new Search({ 
+const client = new Search({
   url: process.env.UPSTASH_SEARCH_REST_URL!,
-  token: process.env.UPSTASH_SEARCH_REST_TOKEN! 
+  token: process.env.UPSTASH_SEARCH_REST_TOKEN!,
 });
 const index = client.index("movies");
 
@@ -25,8 +25,9 @@ const index2 = client2.index("movies");
 ```
 
 Type-safe usage:
+
 ```ts
-type Content = { title: string, genre: string };
+type Content = { title: string; genre: string };
 type Metadata = { year: number };
 const indexTyped = client.index<Content, Metadata>("movies");
 ```
@@ -36,6 +37,7 @@ const indexTyped = client.index<Content, Metadata>("movies");
 ## Upsert (add or update documents)
 
 Pitfalls:
+
 - Document structure must match the index schema.
 - Content/metadata types are enforced when using generics.
 
@@ -44,7 +46,7 @@ Pitfalls:
 await index.upsert({
   id: "star-wars",
   content: { title: "Star Wars", genre: "sci-fi" },
-  metadata: { year: 1977 }
+  metadata: { year: 1977 },
 });
 
 // Multiple
@@ -62,6 +64,7 @@ await index.upsert({ id: "star-wars", content: { title: "A New Hope" } });
 ## Fetch (retrieve documents)
 
 Pitfalls:
+
 - Returns null for IDs not found.
 - Supports prefix matching.
 
@@ -78,8 +81,9 @@ const sciFi = await index.fetch({ prefix: "star-" });
 ## Delete (IDs, prefix, or filter)
 
 Pitfalls:
+
 - **Filter deletion is O(N)** and slow on large indexes.
-- Prefix deletion removes *all* matching documents.
+- Prefix deletion removes _all_ matching documents.
 
 ```ts
 // ID list
@@ -100,6 +104,7 @@ await index.delete({ filter: "age > 30" });
 ## Search (AI‑powered)
 
 Pitfalls:
+
 - Default `limit = 5`.
 - Scores are 0–1.
 - Use filters to restrict by document fields.
@@ -123,6 +128,7 @@ await index.search({ query: "robots", semanticWeight: 0.2 });
 ## Range (cursor pagination)
 
 Pitfalls:
+
 - Stateless: you must pass all parameters every call.
 - `cursor = "0"` for the first request.
 
